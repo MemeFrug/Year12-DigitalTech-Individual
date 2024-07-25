@@ -1,0 +1,21 @@
+html, body {
+    /* Remove margins in order to remove overflows and ensure page is full screen*/
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.Interface {
+    display: flex;
+}
+
+canvas {
+    border: solid 1px black;
+    border-collapse: collapse;
+
+    aspect-ratio: 16/9;
+}
