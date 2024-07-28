@@ -1,15 +1,24 @@
 console.log("Main.js had loaded")
 
 const Game = {
+    applyTransformations: () => {
+        Game.ctx.translate(Game.camera.x, Game.camera.y)
+    },
     settings: {
         width: 1920, // Could change this to localStorage value so we can change
         height: 1080
+    },
+    camera: {
+        x: 0,
+        y: 0,
     },
     interface: {
         element: document.getElementsByClassName("Interface")[0]
     },
     updateLoop: [],
     drawLoop: [],
+    UserInterfaceLoop: [],
+    clickListener: [],
     ctx: document.querySelector("canvas").getContext("2d"), // Let the website know to create memory for this variable
     update: undefined,
     mouse: {
@@ -31,12 +40,11 @@ const Game = {
             }
 
             //Apply transforms
-            const matrix = Game.ctx.currentTransform()
+            const matrix = Game.ctx.getTransform()
             const imatrix = matrix.invertSelf()
-
             
-            Game.mouse = {
-                x: Game.mouse.x * imatrix.a + Game.mouse.y * imatrix.c + imatrix.e,
+            Game.mouse = { 
+                x: Game.mouse.x * imatrix.a + Game.mouse.y * imatrix.c + imatrix.e, 
                 y: Game.mouse.y * imatrix.b + Game.mouse.y * imatrix.d + imatrix.f
             }
         }
@@ -62,25 +70,50 @@ window.addEventListener("load", () => {
 
     //Add mouse update loop
     Game.interface.element.addEventListener("mousemove", Game.mouse.update)
-
-    // add mouse cursor
+    // Debug Draw mouse cursor
     Game.drawLoop.push({draw: (ctx) => {ctx.fillRect(Game.mouse.x-5, Game.mouse.y-5, 10, 10)}})
 
+    Game.interface.element.addEventListener("mouseup", (e) => {
+        Game.clickListener.forEach(element => {
+            console.log("Running Click Function");
+            element(Game.mouse.x, Game.mouse.y)
+        })
+    })
+
+    Game.clickListener.push((x, y) => {
+        Game.updateLoop.push({draw: (ctx) => {ctx.fillRect(x, y,50,50)}})
+        console.log(Game.updateLoop);
+    })
     console.log("canvas set up with", Game.settings.width,"x",Game.settings.height)
     Game.update() // Start the update loop
 })
 
-//https://stackoverflow.com/questions/17130395/real-mouse-position-in-canvas
+// Get the last time to get the current Frame time
+let lastTime = 0
+function Update(delta) {
+    //Get deltaTime for Consistent Animations
+    const deltaTime = delta - lastTime
+    lastTime = delta
 
-function Update() {
-    // Set transform matrix here
-
+    // Reset the transformation so that it doesnt constantly be applied
+    Game.ctx.resetTransform()
     //Clear the rect every
     Game.ctx.clearRect(0,0,Game.settings.width, Game.settings.height)
+    // Run the user interface loop before transformations applied.
+    Game.UserInterfaceLoop.forEach(element => {
+        if (element.update) {
+            element.update(deltaTime)
+        }
+        if (element.draw) {
+            element.draw(Game.ctx)
+        }
+    })
+    // Apply all transformations and rotations, could just be a single set transforms
+    Game.applyTransformations()
 
     Game.updateLoop.forEach(element => {
         if (element.update) {
-            element.update()
+            element.update(deltaTime)
         }
     });
     Game.drawLoop.forEach(element => {
@@ -88,8 +121,6 @@ function Update() {
             element.draw(Game.ctx)
         }
     });
-
-    ctx.fillRect(10, 10, 40, 40)
     requestAnimationFrame(Game.update)
 }
 
