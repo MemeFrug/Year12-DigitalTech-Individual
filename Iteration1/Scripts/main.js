@@ -1,6 +1,7 @@
 console.log("Main.js had loaded")
 
 const Game = {
+    frameTime: 16,
     applyTransformations: () => {
         Game.ctx.translate(Game.camera.x, Game.camera.y)
     },
@@ -13,7 +14,16 @@ const Game = {
         y: 0,
     },
     interface: {
-        element: document.getElementsByClassName("Interface")[0]
+        opened: true,
+        element: document.getElementsByClassName("Interface")[0],
+        userInterfaceElement: document.getElementById("cashierScreen"),
+        // Toggle the UI and return current visible state of UI
+        toggleUserInterface: () => {
+            Game.interface.opened = !Game.interface.opened
+            if (Game.interface.opened) Game.interface.userInterfaceElement.style.display = "flex"
+            else if (!Game.interface.opened) Game.interface.userInterfaceElement.style.display = "none"
+            return Game.interface.opened
+        }
     },
     updateLoop: [],
     drawLoop: [],
@@ -62,7 +72,7 @@ window.addEventListener("load", () => {
     Game.canvasResize = () => {
         ctx.canvas.width = Game.settings.width;
         ctx.canvas.height = Game.settings.height;
-        ctx.canvas.style.width = "100%"
+        ctx.canvas.style.width = "calc(100% - 2px)"
         Game.interface.element.style.width = "100%"
     }
     Game.canvasResize()
@@ -80,9 +90,12 @@ window.addEventListener("load", () => {
         })
     })
 
+    Game.drawLoop.push({draw:(ctx) => {
+        ctx.font = "35px Verdana"
+        ctx.fillText("dt: "+ Game.frameTime.toFixed(1), 30, 40)}})
+
     Game.clickListener.push((x, y) => {
-        Game.updateLoop.push({draw: (ctx) => {ctx.fillRect(x, y,50,50)}})
-        console.log(Game.updateLoop);
+        Game.drawLoop.push({draw: (ctx) => {ctx.fillRect(x-25, y-25,50,50)}})
     })
     console.log("canvas set up with", Game.settings.width,"x",Game.settings.height)
     Game.update() // Start the update loop
@@ -94,6 +107,9 @@ function Update(delta) {
     //Get deltaTime for Consistent Animations
     const deltaTime = delta - lastTime
     lastTime = delta
+
+    //Ensure deltaTime is available globally
+    Game.frameTime = deltaTime
 
     // Reset the transformation so that it doesnt constantly be applied
     Game.ctx.resetTransform()
