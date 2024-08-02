@@ -8,19 +8,53 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+    <h1>Resturant Trainer</h1>
     <div class="Interface">
         <canvas>You do not support Canvas.</canvas>
         <div id="cashierScreen">
             <div class="bottomBar">
                 <!-- Cashier Till -->
                 <div class="cashierTill">
+                    <div class="leftSide">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                    </div>
+                    <div class="rightSide">
+                        <!-- List of things you have selected -->
+                        <div class="productSelection">
 
+                        </div>
+
+                        <!-- Change your menus -->
+                         <div class="menuSelector">
+
+                         </div>
+                    </div>
                 </div>
-                
+                <div class="rightSide">
+                    <!-- moneyTaker -->
+                    <div class="moneyTaker">
+                        <div class="Screen">Total: 100$</div>
+                    </div>
+                    <!-- Submit Button -->
+                    <div id="submitButton"><div>Submit Order</div></div>
+                </div>
             </div>
             <div class="topBar">
                 <div class="orderResults">
-                    <div id="results"></div>
+                    <div id="results">
+                        <b>Order</b>
+                        <p>
+                            Your order is:
+                            <ul>
+                                <li>Cheesballs</li>
+                            </ul>
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

@@ -25,10 +25,10 @@ const Game = {
             return Game.interface.opened
         }
     },
-    updateLoop: [],
-    drawLoop: [],
-    UserInterfaceLoop: [],
-    clickListener: [],
+    updateLoop: [], // Loops through objects and runs their .update(dt) function where dt is the deltaTime
+    drawLoop: [], // Loops through objects and runs their .draw(ctx) function where ctx is canvas Context
+    UserInterfaceLoop: [], // A loop that runs objects's update and draw functions before camera movement 
+    clickListener: [], // Runs any function inside here when the mouse clicks.. NEED TO MAKE OBJECT, AND IF OBJECT RUN THEIR RESPECTIVE FUNCTION IF THEY ARE CLICKED ON
     ctx: document.querySelector("canvas").getContext("2d"), // Let the website know to create memory for this variable
     update: undefined,
     mouse: {
@@ -44,7 +44,9 @@ const Game = {
                 x: canvas.width / rect.width,
                 y: canvas.height / rect.height
             }
-            Game.mouse ={
+
+            // With the scale of the imagei n the canvas, get the relative mouse position
+            const relMousePosition = {
                 x: (Event.clientX - rect.left) * scale.x,
                 y: (Event.clientY - rect.top) * scale.y
             }
@@ -53,9 +55,10 @@ const Game = {
             const matrix = Game.ctx.getTransform()
             const imatrix = matrix.invertSelf()
             
+            // Set the global mouse position 
             Game.mouse = { 
-                x: Game.mouse.x * imatrix.a + Game.mouse.y * imatrix.c + imatrix.e, 
-                y: Game.mouse.y * imatrix.b + Game.mouse.y * imatrix.d + imatrix.f
+                x: relMousePosition.x * imatrix.a + relMousePosition.y * imatrix.c + imatrix.e, 
+                y: relMousePosition.y * imatrix.b + relMousePosition.y * imatrix.d + imatrix.f
             }
         }
     }
@@ -86,7 +89,13 @@ window.addEventListener("load", () => {
     Game.interface.element.addEventListener("mouseup", (e) => {
         Game.clickListener.forEach(element => {
             console.log("Running Click Function");
-            element(Game.mouse.x, Game.mouse.y)
+            if (element === Square) {
+                console.log("element is an Element");
+                if (element.click) {
+                    element.click(Game.mouse.x, Game.mouse.y)
+                }
+            }
+            else element(Game.mouse.x, Game.mouse.y)
         })
     })
 
