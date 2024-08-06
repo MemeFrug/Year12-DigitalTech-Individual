@@ -13,6 +13,7 @@ html, body {
     display: flex;
     position: relative;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    user-select: none;
 }
 
 canvas {
@@ -90,45 +91,67 @@ canvas {
 
 .rightSide {
     display: flex;
-    justify-content: space-around;
     flex-direction: column;
     height: 100%;
     width: auto;
+    justify-content: space-around;
 }
 
-.cashierTill .leftSide div {
+.cashierTill .leftSide .column {
+    height: 100%;
+}
+
+.cashierTill .leftSide .column div {
     border: 2px solid black;
     border-radius: 10px;
-    margin: 5px;
+    margin: 3px;
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 5vw;
-    height: 5vw;
+    width: 6vw;
+    height: 6vw;
 }
 
 .cashierTill .leftSide {
-    display: inline-grid;
+    justify-content: center;
+    display: flex;
     grid-auto-rows: auto;
     overflow: auto;
-    border: 1px solid black;
     border-radius: 10px;
+    overflow-x: hidden;
+}
 
-    /* Grid Stuff */
-    grid-template-columns: 100px;
+.menuSelector {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    height: 40%;
+}
+
+.menuSelector div {
+    height: 100%;
+    margin: 1 px;
+    border: 2px solid black;
+    border-radius: 10px;
+    transition: 0.2s;
+}
+
+.menuSelector div:hover {
+    background-color: black;
+}
+.menuSelector div:active {
+    border-radius: 20px;
 }
 
 .cashierTill .rightSide {
-    border: 1px solid black;
-    border-radius: 10px;
     width: 36%;
+    justify-content: space-between;
 }
 
-.cashierTill .leftSide {
-    border: 1px solid black;
-    border-radius: 10px;
+#cashierScreen .bottomBar .rightSide .productSelection {
+    border: 2px solid black;
+    height: 55%;
 }
-
 
 #cashierScreen .bottomBar .rightSide .moneyTaker {
     width: 12vh;
@@ -147,12 +170,12 @@ canvas {
     display: flex;
     flex-direction: row;
     justify-content:space-between;
-    width: 40%;
-    height: calc(100% - 14px);
+    width: 36%;
+    height: calc(100% - 8px);
     margin-left: 6%;
     margin-right: 4%;
     border-radius: 2px;
-    padding: 7px;
+    padding: 4px;
     border: solid 2px black;
 }
 

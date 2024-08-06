@@ -61,6 +61,15 @@ const Game = {
                 y: relMousePosition.y * imatrix.b + relMousePosition.y * imatrix.d + imatrix.f
             }
         }
+    },
+    canvasResize: () => {
+        ctx.canvas.width = Game.settings.width;
+        ctx.canvas.height = Game.settings.height;
+        ctx.canvas.style.width = "calc(100% - 2px)"
+        Game.interface.element.style.width = "100%"
+    },
+    world: {
+        
     }
 }
 
@@ -71,14 +80,10 @@ let ctx = document.querySelector("canvas").getContext("2d"); // Let the website 
 // Listen for document load, for any images and files, then set up the canvas
 window.addEventListener("load", () => {
     console.log("Document Loaded, setting up canvas."); // Inform Devs of Situation
-
-    Game.canvasResize = () => {
-        ctx.canvas.width = Game.settings.width;
-        ctx.canvas.height = Game.settings.height;
-        ctx.canvas.style.width = "calc(100% - 2px)"
-        Game.interface.element.style.width = "100%"
-    }
+    
+    // Start the canvas resize
     Game.canvasResize()
+    // Set the window resize event to the function call above
     window.addEventListener("resize", Game.canvasResize) // Event for whenever page resizes
 
     //Add mouse update loop
