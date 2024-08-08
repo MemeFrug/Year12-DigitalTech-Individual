@@ -4,17 +4,20 @@ const Game = {
     frameTime: 16,
     applyTransformations: () => {
         Game.ctx.translate(Game.camera.x, Game.camera.y)
+        Game.ctx.scale(Game.camera.scale,Game.camera.scale)
     },
     settings: {
         width: 1920, // Could change this to localStorage value so we can change
-        height: 1080
+        height: 1080,
+        inputStyle: "keyboard"
     },
     camera: {
         x: 0,
         y: 0,
+        scale: 1
     },
     interface: {
-        opened: true,
+        opened: false,
         element: document.getElementsByClassName("Interface")[0],
         userInterfaceElement: document.getElementById("cashierScreen"),
         // Toggle the UI and return current visible state of UI
@@ -68,8 +71,35 @@ const Game = {
         ctx.canvas.style.width = "calc(100% - 2px)"
         Game.interface.element.style.width = "100%"
     },
+    inputType: new Input(),
+    player: new Square(100,500,50,50),
     world: {
-        
+        objects: [
+            new Square(0,0, 20,1080),
+            new Square(10,0, 20,1080),
+            new Square(100, 100, 20,1080),
+        ],
+        setup: () => {
+            Game.world.objects.forEach(obj => {
+                Game.drawLoop.push(obj)
+                Game.updateLoop.push(obj)
+            });
+
+            Game.drawLoop.push(Game.player)
+            Game.updateLoop.push(Game.player)
+            Game.world.objects.push(Game.player)
+            Game.player.isPlayer = true
+
+            Game.inputType.call.up.push(() => {Game.player.movement.y = -1/2})
+            Game.inputType.call.down.push(() => {Game.player.movement.y = 1/2})
+            Game.inputType.call.left.push(() => {Game.player.movement.x = -1/2})
+            Game.inputType.call.right.push(() => {Game.player.movement.x = 1/2})
+
+            Game.inputType.upcall.up.push(() => {Game.player.movement.y = 0})
+            Game.inputType.upcall.down.push(() => {Game.player.movement.y = 0})
+            Game.inputType.upcall.left.push(() => {Game.player.movement.x = 0})
+            Game.inputType.upcall.right.push(() => {Game.player.movement.x = 0})
+        }
     }
 }
 
@@ -81,6 +111,8 @@ let ctx = document.querySelector("canvas").getContext("2d"); // Let the website 
 window.addEventListener("load", () => {
     console.log("Document Loaded, setting up canvas."); // Inform Devs of Situation
     
+    if (!Game.interface.opened) Game.interface.userInterfaceElement.style.display = "none"
+
     // Start the canvas resize
     Game.canvasResize()
     // Set the window resize event to the function call above
@@ -104,14 +136,20 @@ window.addEventListener("load", () => {
         })
     })
 
-    Game.drawLoop.push({draw:(ctx) => {
+    Game.UserInterfaceLoop.push({draw:(ctx) => {
         ctx.font = "35px Verdana"
         ctx.fillText("dt: "+ Game.frameTime.toFixed(1), 30, 40)}})
 
-    Game.clickListener.push((x, y) => {
-        Game.drawLoop.push({draw: (ctx) => {ctx.fillRect(x-25, y-25,50,50)}})
-    })
-    console.log("canvas set up with", Game.settings.width,"x",Game.settings.height)
+    // Game.clickListener.push((x, y) => {
+    //     Game.drawLoop.push({draw: (ctx) => {ctx.fillRect(x-25, y-25,50,50)}})
+    // })
+
+    // Start Listening to keyboard events
+    Game.inputType.style = Game.settings.inputStyle
+    Game.inputType.init()
+
+    Game.world.setup() // Setup the player
+    console.log("Done, Game loop Starting");
     Game.update() // Start the update loop
 })
 
@@ -121,6 +159,8 @@ function Update(delta) {
     //Get deltaTime for Consistent Animations
     const deltaTime = delta - lastTime
     lastTime = delta
+
+    if (deltaTime > 33) console.warn("FPS Lower than 30...", Math.round(1000/deltaTime),"FPS")
 
     //Ensure deltaTime is available globally
     Game.frameTime = deltaTime
@@ -143,7 +183,11 @@ function Update(delta) {
 
     Game.updateLoop.forEach(element => {
         if (element.update) {
-            element.update(deltaTime)
+            if (element instanceof Square) {
+                element.update(deltaTime, Game.world.objects)
+            } else {
+                element.update(deltaTime)
+            }
         }
     });
     Game.drawLoop.forEach(element => {
