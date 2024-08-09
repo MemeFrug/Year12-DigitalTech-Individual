@@ -1,24 +1,45 @@
-class Element {
-    constructor() {
-        this.x = 0
-        this.y = 0
-    }
-}
-
-class Square extends Element {
-    constructor(x,y, w=0,h=0) {
-        super();
+class Square {
+    constructor(x = 0,y = 0, w=50,h=50) {
         this.x = x
         this.y = y
         this.w = w
         this.h = h
         this.vx = 0
         this.vy = 0
+        this.speed = .15
         this.movement = {
             y: 0,
             x: 0,
         }
         this.isPlayer = false
+    }
+
+    //https://stackoverflow.com/questions/67747353/javascript-how-to-have-collision-with-character-and-an-object
+    narrowPhase(obj) {
+        const player = this
+        const dampFactor = 0.5
+
+        let playerTop_ObjBottom = Math.abs(player.y - (obj.y + obj.h));
+        let playerRight_ObjLeft = Math.abs((player.x + player.w) - obj.x);
+        let playerLeft_ObjRight = Math.abs(player.x - (obj.x + obj.w));
+        let playerBottom_ObjTop = Math.abs((player.y + player.h) - obj.y);
+    
+        if ((player.y <= obj.y + obj.h && player.y + player.h > obj.y + obj.h) && (playerTop_ObjBottom < playerRight_ObjLeft && playerTop_ObjBottom < playerLeft_ObjRight)) {
+            player.y = obj.y + obj.h;
+            player.vy = -player.vy * dampFactor;
+        }
+        if ((player.y + player.h >= obj.y && player.y < obj.y) && (playerBottom_ObjTop < playerRight_ObjLeft && playerBottom_ObjTop < playerLeft_ObjRight)) {
+            player.y = obj.y - player.h; 
+            player.vy = -player.vy * dampFactor;
+        }
+        if ((player.x + player.w >= obj.x && player.x < obj.x) && (playerRight_ObjLeft < playerTop_ObjBottom && playerRight_ObjLeft < playerBottom_ObjTop)) {
+            player.x = obj.x - player.w;
+            player.vx = -player.vx * dampFactor; 
+        }
+        if ((player.x <= obj.x + obj.w && player.x + player.w > obj.x + obj.w) && (playerLeft_ObjRight < playerTop_ObjBottom && playerLeft_ObjRight < playerBottom_ObjTop)) {
+            player.x = obj.x + obj.w;
+            player.vx = -player.vx * dampFactor; 
+        }
     }
 
     detectCollision(obj) {
@@ -29,8 +50,9 @@ class Square extends Element {
                 this.x <= obj.x + obj.w &&       // r1 left edge past r2 right
                 this.y + this.h >= obj.y &&       // r1 top edge past r2 bottom
                 this.y <= obj.y + obj.h) {       // r1 bottom edge past r2 top
-                    // console.log("Colliding");
-                    this.x = obj.x + obj.w
+                    // The two objects are colliding
+                    // this.x = obj.x + obj.w
+                    this.narrowPhase(obj)
                     return true;
               }
               return false;
@@ -46,16 +68,12 @@ class Square extends Element {
     }
 
     update(dt, objectLoop = []) {
-        if (!this.x || !this.y) {
-            this.x = 0
-            this.y = 0
-        }
-        this.vx = (this.vx + this.movement.x)
-        this.vy = (this.vy + this.movement.y)
+        this.vx += this.movement.x
+        this.vy += this.movement.y
         this.x += this.vx * dt
         this.y += this.vy * dt
-        this.vx *= 0.6
-        this.vy *= 0.6
+        this.vx *= 0.9
+        this.vy *= 0.9
         objectLoop.forEach(obj => {
             this.detectCollision(obj)
         });
@@ -142,3 +160,15 @@ class Input {
 
     }
 }
+
+const levels = [
+    {   //level 0
+
+    },
+    {   //level 1
+
+    },
+    {   //level 2
+
+    },
+]

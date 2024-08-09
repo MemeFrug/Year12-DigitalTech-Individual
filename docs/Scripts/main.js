@@ -2,6 +2,7 @@ console.log("Main.js had loaded")
 
 const Game = {
     frameTime: 16,
+    paused: false,
     applyTransformations: () => {
         Game.ctx.translate(Game.camera.x, Game.camera.y)
         Game.ctx.scale(Game.camera.scale,Game.camera.scale)
@@ -72,12 +73,17 @@ const Game = {
         Game.interface.element.style.width = "100%"
     },
     inputType: new Input(),
-    player: new Square(100,500,50,50),
+    player: new Square(10,50,100,100),
     world: {
+        levelStatus: 0,
+        time: 60,
+        timerLoops: [],
+        timerEnabled: true,
         objects: [
-            new Square(0,0, 20,1080),
-            new Square(10,0, 20,1080),
-            new Square(100, 100, 20,1080),
+            new Square(970,10, 100,1060),
+            new Square(-90,0, 100,1080),
+            new Square(0,-90, 1070,100),
+            new Square(0,1070, 1070,100),
         ],
         setup: () => {
             Game.world.objects.forEach(obj => {
@@ -85,20 +91,12 @@ const Game = {
                 Game.updateLoop.push(obj)
             });
 
+            console.log(Game.world.objects[0].x); 
+
             Game.drawLoop.push(Game.player)
             Game.updateLoop.push(Game.player)
             Game.world.objects.push(Game.player)
             Game.player.isPlayer = true
-
-            Game.inputType.call.up.push(() => {Game.player.movement.y = -1/2})
-            Game.inputType.call.down.push(() => {Game.player.movement.y = 1/2})
-            Game.inputType.call.left.push(() => {Game.player.movement.x = -1/2})
-            Game.inputType.call.right.push(() => {Game.player.movement.x = 1/2})
-
-            Game.inputType.upcall.up.push(() => {Game.player.movement.y = 0})
-            Game.inputType.upcall.down.push(() => {Game.player.movement.y = 0})
-            Game.inputType.upcall.left.push(() => {Game.player.movement.x = 0})
-            Game.inputType.upcall.right.push(() => {Game.player.movement.x = 0})
         }
     }
 }
@@ -135,10 +133,23 @@ window.addEventListener("load", () => {
             else element(Game.mouse.x, Game.mouse.y)
         })
     })
+    Game.inputType.call.up.push(() => {Game.player.movement.y = -Game.player.speed})
+    Game.inputType.call.down.push(() => {Game.player.movement.y = Game.player.speed})
+    Game.inputType.call.left.push(() => {Game.player.movement.x = -Game.player.speed})
+    Game.inputType.call.right.push(() => {Game.player.movement.x = Game.player.speed})
 
+    Game.inputType.upcall.up.push(() => {Game.player.movement.y = 0})
+    Game.inputType.upcall.down.push(() => {Game.player.movement.y = 0})
+    Game.inputType.upcall.left.push(() => {Game.player.movement.x = 0})
+    Game.inputType.upcall.right.push(() => {Game.player.movement.x = 0})
+    
     Game.UserInterfaceLoop.push({draw:(ctx) => {
         ctx.font = "35px Verdana"
         ctx.fillText("dt: "+ Game.frameTime.toFixed(1), 30, 40)}})
+
+    Game.UserInterfaceLoop.push({draw:(ctx) => {
+        ctx.font = "35px Verdana"
+        ctx.fillText("Timer: "+ Game.world.time, Game.settings.width - 500, 50)}})
 
     // Game.clickListener.push((x, y) => {
     //     Game.drawLoop.push({draw: (ctx) => {ctx.fillRect(x-25, y-25,50,50)}})
@@ -148,9 +159,11 @@ window.addEventListener("load", () => {
     Game.inputType.style = Game.settings.inputStyle
     Game.inputType.init()
 
+    console.log(Game.world.objects[0].x);
     Game.world.setup() // Setup the player
     console.log("Done, Game loop Starting");
     Game.update() // Start the update loop
+    console.log(Game.world.objects[0].x);
 })
 
 // Get the last time to get the current Frame time
@@ -159,9 +172,12 @@ function Update(delta) {
     //Get deltaTime for Consistent Animations
     const deltaTime = delta - lastTime
     lastTime = delta
-
-    if (deltaTime > 33) console.warn("FPS Lower than 30...", Math.round(1000/deltaTime),"FPS")
-
+    if (!deltaTime || Game.paused) {
+        Game.update = Update
+        requestAnimationFrame(Game.update)
+        return
+    }
+    // if (deltaTime > 33) console.warn("FPS Lower than 30...", Math.round(1000/deltaTime),"FPS")
     //Ensure deltaTime is available globally
     Game.frameTime = deltaTime
 
@@ -190,6 +206,18 @@ function Update(delta) {
             }
         }
     });
+
+    //Update the Level
+    
+    if (Game.world.timerEnabled && Game.world.time > 0) {
+        Game.world.time-= deltaTime/1000
+    } else {
+        // Call the level's update function
+        levels[Game.world.levelStatus]
+    }
+
+
+    //Draw Everything
     Game.drawLoop.forEach(element => {
         if (element.draw) {
             element.draw(Game.ctx)
