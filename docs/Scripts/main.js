@@ -15,7 +15,8 @@ const Game = {
     camera: {
         x: 0,
         y: 0,
-        scale: 1
+        scale: 1,
+        draw: true,
     },
     interface: {
         opened: false,
@@ -80,18 +81,32 @@ const Game = {
         timerLoops: [],
         timerEnabled: true,
         objects: [
+            // Walls to the restuarant
             new Square(970,10, 100,1060),
             new Square(-90,0, 100,1080),
             new Square(0,-90, 1070,100),
             new Square(0,1070, 1070,100),
         ],
+        spawnNPC: () => {
+            // Get a random list of foods/drinks
+            pickableItems.returnRandomList(levels[Game.world.levelStatus].maxItemList)
+            const npc = new Square(0,0,50,50)
+            npc.x = Game.settings.width - npc.w
+            npc.y = Math.random() * Game.settings.height - npc.h
+
+            npc.scripts.push(() => {
+                npc.vx = -npc.speed
+            })
+            
+            Game.world.objects.push(npc) // Add Collisions with other objects
+            Game.drawLoop.push(npc) // Add to draw loop
+            Game.updateLoop.push(npc) // Add to update loop
+        },
         setup: () => {
             Game.world.objects.forEach(obj => {
                 Game.drawLoop.push(obj)
                 Game.updateLoop.push(obj)
             });
-
-            console.log(Game.world.objects[0].x); 
 
             Game.drawLoop.push(Game.player)
             Game.updateLoop.push(Game.player)
@@ -149,7 +164,7 @@ window.addEventListener("load", () => {
 
     Game.UserInterfaceLoop.push({draw:(ctx) => {
         ctx.font = "35px Verdana"
-        ctx.fillText("Timer: "+ Game.world.time, Game.settings.width - 500, 50)}})
+        ctx.fillText("Timer: "+ Game.world.time.toFixed(0), Game.settings.width - 500, 50)}})
 
     // Game.clickListener.push((x, y) => {
     //     Game.drawLoop.push({draw: (ctx) => {ctx.fillRect(x-25, y-25,50,50)}})
@@ -159,11 +174,9 @@ window.addEventListener("load", () => {
     Game.inputType.style = Game.settings.inputStyle
     Game.inputType.init()
 
-    console.log(Game.world.objects[0].x);
     Game.world.setup() // Setup the player
     console.log("Done, Game loop Starting");
     Game.update() // Start the update loop
-    console.log(Game.world.objects[0].x);
 })
 
 // Get the last time to get the current Frame time
@@ -174,7 +187,7 @@ function Update(delta) {
     lastTime = delta
     if (!deltaTime || Game.paused) {
         Game.update = Update
-        requestAnimationFrame(Game.update)
+        requestAnimationFrame(Game.update);
         return
     }
     // if (deltaTime > 33) console.warn("FPS Lower than 30...", Math.round(1000/deltaTime),"FPS")
@@ -208,21 +221,24 @@ function Update(delta) {
     });
 
     //Update the Level
-    
     if (Game.world.timerEnabled && Game.world.time > 0) {
+        Game.world.timerEnabled = true // This might break the loop
         Game.world.time-= deltaTime/1000
-    } else {
-        // Call the level's update function
-        levels[Game.world.levelStatus]
+    } else if (Game.world.timerEnabled) {
+        Game.world.timerEnabled = false
     }
+    // Call the level's update function
+    levels[Game.world.levelStatus].update(deltaTime)
 
 
     //Draw Everything
-    Game.drawLoop.forEach(element => {
-        if (element.draw) {
-            element.draw(Game.ctx)
-        }
-    });
+    if (Game.camera.draw) {
+        Game.drawLoop.forEach(element => {
+            if (element.draw) {
+                element.draw(Game.ctx)
+            }
+        });
+    }
     requestAnimationFrame(Game.update)
 }
 

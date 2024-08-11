@@ -12,6 +12,10 @@ class Square {
             x: 0,
         }
         this.isPlayer = false
+
+        this.scripts = [
+
+        ]
     }
 
     //https://stackoverflow.com/questions/67747353/javascript-how-to-have-collision-with-character-and-an-object
@@ -68,6 +72,10 @@ class Square {
     }
 
     update(dt, objectLoop = []) {
+        this.scripts.forEach(script => {
+            script(dt, objectLoop)
+        })
+
         this.vx += this.movement.x
         this.vy += this.movement.y
         this.x += this.vx * dt
@@ -161,9 +169,41 @@ class Input {
     }
 }
 
+const pickableItems = {
+    items: [
+        {}
+    ],
+    returnRandomList: (numberOfItems) => {
+        let list = []
+
+        return list;
+    }
+}
+
 const levels = [
     {   //level 0
+        spawnTimer: 0, // Timer for NPC spawning.
+        spawnSpeed: 2400, // Spawn Speed of NPCs
+        maxItemList: 2, // How many items
+        spawner: (dt) => {
+            if (Game.paused) {
+                return;
+            }
+            if (Game.world.time <= 0) {
+                spawnTimer = 0;
+                return;
+            }
+            let level = levels[0]
+            level.spawnTimer += Math.random() * dt
+            if (level.spawnTimer >= level.spawnSpeed) {
+                console.log("spawning");
+                level.spawnTimer = 0
+            }
+        },
 
+        update: (dt) => {
+            levels[0].spawner(dt)
+        }
     },
     {   //level 1
 
