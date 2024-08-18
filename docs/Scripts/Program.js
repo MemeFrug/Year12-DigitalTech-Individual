@@ -1,3 +1,23 @@
+/*
+ Returns a random number between min (inclusive) and max (exclusive)
+ */
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+/*
+ Returns a random integer between min (inclusive) and max (inclusive).
+ The value is no lower than min (or the next integer greater than min
+ if min isn't an integer) and no greater than max (or the next integer
+ lower than max if max isn't an integer).
+ Using Math.round() will give you a non-uniform distribution!
+ */
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 class Square {
     constructor(x = 0,y = 0, w=50,h=50) {
         this.x = x
@@ -7,9 +27,11 @@ class Square {
         this.vx = 0
         this.vy = 0
         this.speed = .15
-        this.movement = {
-            y: 0,
-            x: 0,
+        this.movement = { // Constant Values Applied to velocity
+            up: 0,
+            down: 0,
+            left: 0,
+            right: 0,
         }
         this.isPlayer = false
 
@@ -67,8 +89,13 @@ class Square {
     }
 
     draw(ctx) {
-        ctx.fillStyle = "black"
+        ctx.fillStyle = "black";
         ctx.fillRect(this.x, this.y, this.w, this.h);
+    }
+
+    movementUpdate(dt) {
+        this.vx += this.movement.right - this.movement.left
+        this.vy += this.movement.down - this.movement.up
     }
 
     update(dt, objectLoop = []) {
@@ -76,10 +103,14 @@ class Square {
             script(dt, objectLoop)
         })
 
-        this.vx += this.movement.x
-        this.vy += this.movement.y
+        // Update the player movement
+        this.movementUpdate(dt)
+
+        // Add square's velocity to coords with deltaTime
         this.x += this.vx * dt
         this.y += this.vy * dt
+        
+        // Dampen The square's velocity
         this.vx *= 0.9
         this.vy *= 0.9
         objectLoop.forEach(obj => {
@@ -180,8 +211,15 @@ const pickableItems = {
     }
 }
 
+
+
 const levels = [
     {   //level 0
+        spawnerLines: [
+            {y:110},
+            {y:500},
+            {y:700},
+        ],
         spawnTimer: 0, // Timer for NPC spawning.
         spawnSpeed: 2400, // Spawn Speed of NPCs
         maxItemList: 2, // How many items
@@ -198,6 +236,9 @@ const levels = [
             if (level.spawnTimer >= level.spawnSpeed) {
                 console.log("spawning");
                 level.spawnTimer = 0
+
+                //Spawn the npc
+                Game.world.spawnNPC()
             }
         },
 

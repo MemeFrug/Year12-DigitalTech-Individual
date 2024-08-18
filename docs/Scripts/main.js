@@ -76,7 +76,7 @@ const Game = {
     inputType: new Input(),
     player: new Square(10,50,100,100),
     world: {
-        levelStatus: 0,
+        status: 0,
         time: 60,
         timerLoops: [],
         timerEnabled: true,
@@ -86,18 +86,25 @@ const Game = {
             new Square(-90,0, 100,1080),
             new Square(0,-90, 1070,100),
             new Square(0,1070, 1070,100),
+            new Square(100,500, 100,100),
         ],
         spawnNPC: () => {
+            // Pick from three possible lines
+            const lines = levels[Game.world.status].spawnerLines
+            let pickedLine = lines[getRandomInt(0, lines.length-1)]
+            
             // Get a random list of foods/drinks
-            pickableItems.returnRandomList(levels[Game.world.levelStatus].maxItemList)
-            const npc = new Square(0,0,50,50)
+            // pickableItems.returnRandomList(levels[Game.world.status].maxItemList)
+
+            const npc = new Square(0,0,100,100)
             npc.x = Game.settings.width - npc.w
-            npc.y = Math.random() * Game.settings.height - npc.h
+            npc.y = pickedLine.y
+            console.log(npc.y);
 
             npc.scripts.push(() => {
                 npc.vx = -npc.speed
             })
-            
+            npc.isPlayer = true
             Game.world.objects.push(npc) // Add Collisions with other objects
             Game.drawLoop.push(npc) // Add to draw loop
             Game.updateLoop.push(npc) // Add to update loop
@@ -148,15 +155,18 @@ window.addEventListener("load", () => {
             else element(Game.mouse.x, Game.mouse.y)
         })
     })
-    Game.inputType.call.up.push(() => {Game.player.movement.y = -Game.player.speed})
-    Game.inputType.call.down.push(() => {Game.player.movement.y = Game.player.speed})
-    Game.inputType.call.left.push(() => {Game.player.movement.x = -Game.player.speed})
-    Game.inputType.call.right.push(() => {Game.player.movement.x = Game.player.speed})
 
-    Game.inputType.upcall.up.push(() => {Game.player.movement.y = 0})
-    Game.inputType.upcall.down.push(() => {Game.player.movement.y = 0})
-    Game.inputType.upcall.left.push(() => {Game.player.movement.x = 0})
-    Game.inputType.upcall.right.push(() => {Game.player.movement.x = 0})
+    // Set event listeners for when pressing inputs.
+    Game.inputType.call.up.push(() => {Game.player.movement.up = Game.player.speed})
+    Game.inputType.call.down.push(() => {Game.player.movement.down = Game.player.speed})
+    Game.inputType.call.left.push(() => {Game.player.movement.left = Game.player.speed})
+    Game.inputType.call.right.push(() => {Game.player.movement.right = Game.player.speed})
+
+    // Set event listeners for when lifting inputs
+    Game.inputType.upcall.up.push(() => {Game.player.movement.up = 0})
+    Game.inputType.upcall.down.push(() => {Game.player.movement.down = 0})
+    Game.inputType.upcall.left.push(() => {Game.player.movement.left = 0})
+    Game.inputType.upcall.right.push(() => {Game.player.movement.right = 0})
     
     Game.UserInterfaceLoop.push({draw:(ctx) => {
         ctx.font = "35px Verdana"
@@ -228,7 +238,7 @@ function Update(delta) {
         Game.world.timerEnabled = false
     }
     // Call the level's update function
-    levels[Game.world.levelStatus].update(deltaTime)
+    levels[Game.world.status].update(deltaTime)
 
 
     //Draw Everything
