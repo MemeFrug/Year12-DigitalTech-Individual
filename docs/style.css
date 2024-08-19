@@ -138,6 +138,7 @@ canvas {
 
 .menuSelector div:hover {
     background-color: black;
+    color: white;
 }
 .menuSelector div:active {
     border-radius: 20px;

@@ -80,13 +80,15 @@ const Game = {
         time: 60,
         timerLoops: [],
         timerEnabled: true,
+        interactors: [
+
+        ],
         objects: [
             // Walls to the restuarant
             new Square(970,10, 100,1060),
             new Square(-90,0, 100,1080),
             new Square(0,-90, 1070,100),
             new Square(0,1070, 1070,100),
-            new Square(100,500, 100,100),
         ],
         spawnNPC: () => {
             // Pick from three possible lines
@@ -96,15 +98,41 @@ const Game = {
             // Get a random list of foods/drinks
             // pickableItems.returnRandomList(levels[Game.world.status].maxItemList)
 
-            const npc = new Square(0,0,100,100)
+            const npc = new Square(0, pickedLine.y,100,100)
             npc.x = Game.settings.width - npc.w
-            npc.y = pickedLine.y
-            console.log(npc.y);
 
+            // NPC Script
             npc.scripts.push(() => {
-                npc.vx = -npc.speed
+                if (npc.x >= 975 + npc.w) {
+                    npc.vx = -npc.speed
+                } else {
+                    if (!npc.interactionSpawned){
+                        const interaction = new Interactor(0,0,100,100)
+                        npc.interactionSpawned = true
+                        npc.tiedInteractor = interaction
+
+                        interaction.scripts.push(() => {
+                            //When interacting with an NPC, open the cashier screen up
+                            Game.inputType.enabled = false // Prevent moving the character or other key presses
+                            Game.interface.toggleUserInterface()
+                            Game.camera.draw = false // Prevent drawing under the UI 
+                        })
+
+                        interaction.setParent(npc, true)
+                        Game.world.interactors.push(interaction)
+                        Game.drawLoop.unshift(interaction) // Add to draw loop
+                        Game.updateLoop.push(interaction) // Add to update loop
+                    }
+                }
             })
-            npc.isPlayer = true
+            
+            npc.draw = (ctx) => {
+                ctx.fillRect(npc.x,npc.y, npc.w, npc.h)
+            }
+
+            npc.isPlayer = true // Allows it to collide with things...
+
+            levels[Game.world.status].npcList.push(npc) // Add npc to level list
             Game.world.objects.push(npc) // Add Collisions with other objects
             Game.drawLoop.push(npc) // Add to draw loop
             Game.updateLoop.push(npc) // Add to update loop
@@ -114,6 +142,9 @@ const Game = {
                 Game.drawLoop.push(obj)
                 Game.updateLoop.push(obj)
             });
+
+            
+
 
             Game.drawLoop.push(Game.player)
             Game.updateLoop.push(Game.player)
@@ -141,7 +172,10 @@ window.addEventListener("load", () => {
     //Add mouse update loop
     Game.interface.element.addEventListener("mousemove", Game.mouse.update)
     // Debug Draw mouse cursor
-    Game.drawLoop.push({draw: (ctx) => {ctx.fillRect(Game.mouse.x-5, Game.mouse.y-5, 10, 10)}})
+    Game.drawLoop.push({draw: (ctx) => {
+        ctx.fillStyle = "black"
+        ctx.fillRect(Game.mouse.x-5, Game.mouse.y-5, 10, 10)
+    }})
 
     Game.interface.element.addEventListener("mouseup", (e) => {
         Game.clickListener.forEach(element => {
@@ -154,6 +188,24 @@ window.addEventListener("load", () => {
             }
             else element(Game.mouse.x, Game.mouse.y)
         })
+    })
+
+    //When interaction key is pressed check if player is over interaction point
+    Game.inputType.interactEvent = () => {
+        Game.world.interactors.forEach(interactors => {
+            console.log("Interacting");
+            interactors.interact(Game.player)
+        });
+    }
+
+    // When Lose focus, pause game
+    window.addEventListener("blur", () => {
+        console.log("Loss Window Focus");
+        Game.paused = true
+    })
+    window.addEventListener("focus", () => {
+        console.log("Gained window focus");
+        Game.paused = false
     })
 
     // Set event listeners for when pressing inputs.
@@ -169,10 +221,12 @@ window.addEventListener("load", () => {
     Game.inputType.upcall.right.push(() => {Game.player.movement.right = 0})
     
     Game.UserInterfaceLoop.push({draw:(ctx) => {
+        ctx.fillStyle = "black"
         ctx.font = "35px Verdana"
         ctx.fillText("dt: "+ Game.frameTime.toFixed(1), 30, 40)}})
 
     Game.UserInterfaceLoop.push({draw:(ctx) => {
+        ctx.fillStyle = "black"
         ctx.font = "35px Verdana"
         ctx.fillText("Timer: "+ Game.world.time.toFixed(0), Game.settings.width - 500, 50)}})
 

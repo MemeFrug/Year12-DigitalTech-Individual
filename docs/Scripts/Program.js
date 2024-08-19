@@ -18,8 +18,27 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-class Square {
+class Element {
+    Destroy(inDraw = false, inUpdate = false, inWorld = false, inNPC = false) {
+        if (inDraw) {
+            console.log(Game.drawLoop.indexOf(this));
+            Game.drawLoop.splice(Game.drawLoop.indexOf(this), 1);
+        }
+        if (inUpdate) {
+            Game.updateLoop.splice(Game.updateLoop.indexOf(this), 1);
+        }
+        if (inWorld) {
+            Game.world.objects.splice(Game.world.objects.indexOf(this), 1);
+        }
+        if (inNPC) {
+            levels[Game.world.status].npcList.splice(levels[Game.world.status].npcList.indexOf(this), 1)
+        }
+    }
+}
+
+class Square extends Element {
     constructor(x = 0,y = 0, w=50,h=50) {
+        super()
         this.x = x
         this.y = y
         this.w = w
@@ -69,8 +88,8 @@ class Square {
     }
 
     detectCollision(obj) {
-        if (obj.isPlayer) return;
-        if (!this.isPlayer) return;
+        // if (obj.isPlayer) return;
+        // if (!this.isPlayer) return;
         if (obj instanceof Square){
             if (this.x + this.w >= obj.x &&     // r1 right edge past r2 left
                 this.x <= obj.x + obj.w &&       // r1 left edge past r2 right
@@ -84,7 +103,7 @@ class Square {
               return false;
         }
         else {
-            console.error("Unknown Class")
+            console.error("Class not setup for collision")
         }
     }
 
@@ -119,9 +138,69 @@ class Square {
     }
 }
 
+class Interactor extends Element {
+    constructor(x,y,w,h) {
+        super()
+        this.x = x
+        this.y = y
+        this.w = w
+        this.h = h
+        
+        this.destroyWithParent = false
+        this.parent = undefined
+
+        this.scripts = []
+    }
+
+    setParent(parent, destroywith = true) {
+        this.parent = parent
+        this.destroyWithParent = destroywith
+
+        this.x = parent.x - this.w - parent.w - 10
+        this.y = parent.y
+    }
+
+    draw(ctx) {
+        ctx.globalAlpha = 0.5
+        ctx.strokeStyle = "darkgreen"
+        ctx.fillStyle = "lightgreen"
+        ctx.fillRect(this.x, this.y, this.w, this.h)
+        ctx.strokeRect(this.x, this.y, this.w, this.h)
+        ctx.globalAlpha = 1
+    }
+
+    interact(obj) {
+        if (this.isTouching(obj)) {
+            this.scripts.forEach(script => {
+                script()
+            });
+        }
+    }
+
+    isTouching(obj) {
+        // if (obj.isPlayer) return;
+        // if (!this.isPlayer) return;
+        if (obj instanceof Square){ // Check if it has class square so no errors are thrown
+            if (this.x + this.w >= obj.x &&     // r1 right edge past r2 left
+                this.x <= obj.x + obj.w &&       // r1 left edge past r2 right
+                this.y + this.h >= obj.y &&       // r1 top edge past r2 bottom
+                this.y <= obj.y + obj.h) {       // r1 bottom edge past r2 top
+                    // The two objects are colliding return true
+                    return true;
+              }
+              return false;
+        }
+        else {
+            console.error("Class not setup for collision")
+        }
+    }
+}
+
 class Input {
     constructor(style="keyboard") {
         this.style = style
+
+        this.enabled = true
 
         this.call = {
             left: [],
@@ -129,6 +208,8 @@ class Input {
             right: [],
             down: []
         }
+
+        this.interactEvent = undefined
 
         this.upcall = {
             left: [],
@@ -140,6 +221,7 @@ class Input {
 
     init() {
         window.addEventListener("keydown", (code) => {
+            if (!this.enabled) return;
             switch (code.key) {
                 case "w":
                     this.call.up.forEach(func => {
@@ -162,11 +244,11 @@ class Input {
                     });
                     break;
                 default:
-                    // console.warn("unknown input", code.key)
                     break;
             }
         })
         window.addEventListener("keyup", (code) => {
+            if (!this.enabled) return;
             switch (code.key) {
                 case "w":
                     this.upcall.up.forEach(func => {
@@ -188,8 +270,12 @@ class Input {
                         func()
                     });
                     break;
+                case "e":
+                    if (this.interactEvent) {
+                        this.interactEvent()
+                    }
+                    break;
                 default:
-                    // console.warn("unknown input", code.key)
                     break;
             }
         })
@@ -216,22 +302,28 @@ const pickableItems = {
 const levels = [
     {   //level 0
         spawnerLines: [
-            {y:110},
             {y:500},
             {y:700},
+            {y:900},
         ],
         spawnTimer: 0, // Timer for NPC spawning.
         spawnSpeed: 2400, // Spawn Speed of NPCs
+        maxNPCCount: 2,
         maxItemList: 2, // How many items
+
+        npcList: [],
+
         spawner: (dt) => {
-            if (Game.paused) {
-                return;
-            }
+            let level = levels[0]
+
+            if (Game.paused) return;
             if (Game.world.time <= 0) {
                 spawnTimer = 0;
                 return;
             }
-            let level = levels[0]
+
+            if (level.maxNPCCount <= level.npcList.length) return;
+
             level.spawnTimer += Math.random() * dt
             if (level.spawnTimer >= level.spawnSpeed) {
                 console.log("spawning");
