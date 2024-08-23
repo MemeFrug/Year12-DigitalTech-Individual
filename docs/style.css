@@ -97,11 +97,11 @@ canvas {
     justify-content: space-around;
 }
 
-.cashierTill .leftSide .column {
+.leftSide .menu .column {
     height: 100%;
 }
 
-.cashierTill .leftSide .column div {
+.leftSide .menu .column div {
     border: 2px solid black;
     border-radius: 10px;
     margin: 3px;
@@ -112,7 +112,7 @@ canvas {
     height: 6vw;
 }
 
-.cashierTill .leftSide {
+.cashierTill .leftSide .menu {
     justify-content: center;
     display: flex;
     grid-auto-rows: auto;

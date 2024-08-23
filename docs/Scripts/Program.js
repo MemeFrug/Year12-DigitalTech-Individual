@@ -1,3 +1,12 @@
+// Global Values
+const val = {
+    categories: {
+        Food: 0,
+        Drinks: 1,
+        Other: 2
+    },
+}
+
 /*
  Returns a random number between min (inclusive) and max (exclusive)
  */
@@ -288,12 +297,33 @@ class Input {
 
 const pickableItems = {
     items: [
-        {}
+        {name: "Cheese Balls", category: val.categories.Food},
+        {name: "Coke", category: val.categories.Drinks},
+        {name: "Cup With Logo", category: val.categories.Other},
+        {name: "Pepsi", category: val.categories.Drinks},
+        {name: "Fanta", category: val.categories.Drinks},
+        {name: "Creaming Soda", category: val.categories.Drinks},
+        {name: "Pizza", category: val.categories.Food},
+        {name: "Hot Fudge Sundae", category: val.categories.Other},
+        {name: "Chicken Tenders", category: val.categories.Food},
+        {name: "Hashbrowns", category: val.categories.Food},
+        {name: "Chicken Soup", category: val.categories.Food},
+        {name: "Brownies", category: val.categories.Other},
     ],
     returnRandomList: (numberOfItems) => {
-        let list = []
+        let list = [] // Get an empty list
+        for (let i = 0; i < numberOfItems; i++) {
+            // Loop through a set number of times
+            const item = pickableItems.items[getRandomInt(0, pickableItems.items.length - 1)]
 
+            list.push(item)
+        }
+        console.log(list);
         return list;
+    },
+    returnList: () => {
+        // Returns the entire list for building the User Interface
+        return pickableItems.items
     }
 }
 
