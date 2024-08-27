@@ -10,14 +10,20 @@ const buttons = {
 }
 
 const orderingUI = {
-    //Initialise
+    data: {
+        food: [[],[],[]],
+        drinks: [[],[],[]],
+        other: [[],[],[]]
+    },
+
+    //Initialise    
     init: () => {
         buttons.submit.addEventListener("mouseup", orderingUI.submit)
         buttons.food.addEventListener("mouseup", () => orderingUI.changeMenu(val.categories.Food))
         buttons.drinks.addEventListener("mouseup", () => orderingUI.changeMenu(val.categories.Drinks))
         buttons.other.addEventListener("mouseup", () => orderingUI.changeMenu(val.categories.Other))
     
-        setUpOrdering(pickableItems.returnList())
+        // setUpOrdering(pickableItems.returnRandomList(3))
     },
     changeMenu: (menu) => {
         /*
@@ -51,14 +57,31 @@ function setUpOrdering(itemsList) {
     itemsList.forEach(item => {
         switch (item.category) {
             case i = val.categories.Food:
-                let foodcolumn1 = document.getElementById("foodColumn1");
-                let foodcolumn2 = document.getElementById("foodColumn2");
-                let foodcolumn3 = document.getElementById("foodColumn3");
-            
-                let div = document.createElement("div")
-                div.textContent = item.name
-                foodcolumn1.appendChild(div) //Need to make it pick a suitable column
+                const count1 = orderingUI.data.food[0].length
+                const count2 = orderingUI.data.food[1].length
+                const count3 = orderingUI.data.food[2].length
+
+                // Not Returning correct minimum
+                const minimumCount = Math.min(count1, count2, count3)
+                let pickedColumn = undefined
+                console.log(minimumCount, count1, count2, count3);
+
+                switch (minimumCount) {
+                    case count1:
+                        pickedColumn = document.getElementById("foodColumn1");
+                        break;
+                    case count2:
+                        pickedColumn = document.getElementById("foodColumn2");
+                        break;
+                    case count3:
+                        pickedColumn = document.getElementById("foodColumn3");
+                        break
+                    default:
+                        console.warn("This shouldnt happen.");
+                        break;
+                } 
                 break;
+
             case i = val.categories.Drinks:
                 let drinkcolumn1 = document.getElementById("drinkColumn1");
                 let drinkcolumn2 = document.getElementById("drinkColumn2");
@@ -84,7 +107,7 @@ function debugToggleOrdering() {
                                 Game.interface.toggleUserInterface()
                                 Game.camera.draw = !Game.camera.draw // Prevent drawing under the UI 
 
-                                setUpOrdering(pickableItems.returnRandomList(3))
+                                setUpOrdering(pickableItems.returnList())
 }
 
 orderingUI.init()

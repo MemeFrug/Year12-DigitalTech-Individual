@@ -306,7 +306,7 @@ const pickableItems = {
         {name: "Pizza", category: val.categories.Food},
         {name: "Hot Fudge Sundae", category: val.categories.Other},
         {name: "Chicken Tenders", category: val.categories.Food},
-        {name: "Hashbrowns", category: val.categories.Food},
+        {name: "Hash Browns", category: val.categories.Food},
         {name: "Chicken Soup", category: val.categories.Food},
         {name: "Brownies", category: val.categories.Other},
     ],
