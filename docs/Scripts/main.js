@@ -75,7 +75,11 @@ const Game = {
     },
     inputType: new Input(),
     player: new Square(10,50,100,100),
+    orders: [
+        //Each of the orders
+    ],
     world: {
+        score: 0,
         status: 0,
         time: 60,
         timerLoops: [],
@@ -115,6 +119,7 @@ const Game = {
                             //When interacting with an NPC, open the cashier screen up
                             Game.inputType.enabled = false // Prevent moving the character or other key presses
                             Game.interface.toggleUserInterface()
+                            orderingUI.newOrder(Game.world.status*2+1) // Create a brand new order
                             Game.camera.draw = false // Prevent drawing under the UI 
                         })
 
@@ -143,9 +148,6 @@ const Game = {
                 Game.updateLoop.push(obj)
             });
 
-            
-
-
             Game.drawLoop.push(Game.player)
             Game.updateLoop.push(Game.player)
             Game.world.objects.push(Game.player)
@@ -171,11 +173,12 @@ window.addEventListener("load", () => {
 
     //Add mouse update loop
     Game.interface.element.addEventListener("mousemove", Game.mouse.update)
+    
     // Debug Draw mouse cursor
-    Game.drawLoop.push({draw: (ctx) => {
-        ctx.fillStyle = "black"
-        ctx.fillRect(Game.mouse.x-5, Game.mouse.y-5, 10, 10)
-    }})
+    // Game.drawLoop.push({draw: (ctx) => {
+    //     ctx.fillStyle = "black"
+    //     ctx.fillRect(Game.mouse.x-5, Game.mouse.y-5, 10, 10)
+    // }})
 
     Game.interface.element.addEventListener("mouseup", (e) => {
         Game.clickListener.forEach(element => {
@@ -230,16 +233,12 @@ window.addEventListener("load", () => {
         ctx.font = "35px Verdana"
         ctx.fillText("Timer: "+ Game.world.time.toFixed(0), Game.settings.width - 500, 50)}})
 
-    // Game.clickListener.push((x, y) => {
-    //     Game.drawLoop.push({draw: (ctx) => {ctx.fillRect(x-25, y-25,50,50)}})
-    // })
-
     // Start Listening to keyboard events
     Game.inputType.style = Game.settings.inputStyle
     Game.inputType.init()
 
     Game.world.setup() // Setup the player
-    console.log("Done, Game loop Starting");
+    console.log("Done Setup, Game loop Starting");
     Game.update() // Start the update loop
 })
 

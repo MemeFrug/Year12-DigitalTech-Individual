@@ -297,19 +297,21 @@ class Input {
 
 const pickableItems = {
     items: [
-        {name: "Cheese Balls", category: val.categories.Food},
-        {name: "Coke", category: val.categories.Drinks},
-        {name: "Cup With Logo", category: val.categories.Other},
-        {name: "Pepsi", category: val.categories.Drinks},
-        {name: "Fanta", category: val.categories.Drinks},
-        {name: "Creaming Soda", category: val.categories.Drinks},
-        {name: "Pizza", category: val.categories.Food},
-        {name: "Hot Fudge Sundae", category: val.categories.Other},
-        {name: "Chicken Tenders", category: val.categories.Food},
-        {name: "Hash Browns", category: val.categories.Food},
-        {name: "Chicken Soup", category: val.categories.Food},
-        {name: "Brownies", category: val.categories.Other},
+        // Each entry contains a name, category and cost of the product
+        {name: "Cheese Balls", category: val.categories.Food, cost: 10},
+        {name: "Coke", category: val.categories.Drinks, cost: 10},
+        {name: "Cup With Logo", category: val.categories.Other, cost: 10},
+        {name: "Pepsi", category: val.categories.Drinks, cost: 10},
+        {name: "Fanta", category: val.categories.Drinks, cost: 10},
+        {name: "Creaming Soda", category: val.categories.Drinks, cost: 10},
+        {name: "Pizza", category: val.categories.Food, cost: 10},
+        {name: "Hot Fudge Sundae", category: val.categories.Other, cost: 10},
+        {name: "Chicken Tenders", category: val.categories.Food, cost: 10},
+        {name: "Hash Browns", category: val.categories.Food, cost: 10},
+        {name: "Chicken Soup", category: val.categories.Food, cost: 10},
+        {name: "Brownies", category: val.categories.Other, cost: 10},
     ],
+    // Returns an array that contains specified amount of items
     returnRandomList: (numberOfItems) => {
         let list = [] // Get an empty list
         for (let i = 0; i < numberOfItems; i++) {
@@ -321,6 +323,7 @@ const pickableItems = {
         console.log(list);
         return list;
     },
+    // Returns the entire list
     returnList: () => {
         // Returns the entire list for building the User Interface
         return pickableItems.items

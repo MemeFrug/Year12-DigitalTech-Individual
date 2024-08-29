@@ -19,33 +19,29 @@
                     <div class="leftSide">
                         <div id="FoodMenu" class="menu">
                             <!-- Containers For each Column -->
-                            <div class="column" id="foodColumn1"> <!-- Column 1 -->
+                            <div class="column" id="0Column1"> <!-- Column 1 -->
                                 <!-- Interior Divs -->
                             </div>
-                            <div class="column" id="foodColumn2"> <!-- Column 2 -->
-    
-                            </div>
-                            <div class="column" id="foodColumn3"> <!-- Column 3 -->
-    
-                            </div>
+                            <div class="column" id="0Column2"> <!-- Column 2 --></div>
+                            <div class="column" id="0Column3"> <!-- Column 3 --></div>
                         </div>
                         <div id="DrinksMenu" class="menu" style="display: none;">
                             <!-- Containers For each Column -->
-                            <div class="column" id="drinkColumn1"></div>
-                            <div class="column" id="drinkColumn2"></div>
-                            <div class="column" id="drinkColumn3"></div>
+                            <div class="column" id="1Column1"></div>
+                            <div class="column" id="1Column2"></div>
+                            <div class="column" id="1Column3"></div>
                         </div>
                         <div id="OtherMenu" class="menu" style="display: none;">
                             <!-- Containers For each Column -->
-                            <div class="column" id="otherColumn1"></div>
-                            <div class="column" id="otherColumn2"></div>
-                            <div class="column" id="otherColumn3"></div>
+                            <div class="column" id="2Column1"></div>
+                            <div class="column" id="2Column2"></div>
+                            <div class="column" id="2Column3"></div>
                         </div>
                     </div>
                     <div class="rightSide">
                         <!-- List of things you have selected -->
-                        <div class="productSelection">
-
+                        <div class="productSelection" style="overflow-y: auto;">
+                            <ul id="selectedOrderList" style="padding-inline-start: 20px; font-size: 1.5vw;"></ul>
                         </div>
 
                         <!-- Change your menus -->
@@ -59,7 +55,7 @@
                 <div class="rightSide">
                     <!-- moneyTaker -->
                     <div class="moneyTaker">
-                        <div class="Screen">Total: 100$</div>
+                        <div class="Screen">Total: <span id="orderTotal">0</span>$</div>
                     </div>
                     <!-- Submit Button -->
                     <div id="submitButton"><div>Submit Order</div></div>
@@ -71,7 +67,7 @@
                         <b>Order</b>
                         <p>
                             Your order is:
-                            <ul>
+                            <ul id="orderList">
                                 <li>Cheesballs</li>
                             </ul>
                         </p>

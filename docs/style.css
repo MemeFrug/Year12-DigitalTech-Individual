@@ -51,7 +51,7 @@ canvas {
 
 #cashierScreen .topBar .orderResults {
     width: 20%;
-    margin: 6px;
+    margin: 1px;
     border: solid 2px black;
     border-radius: 15px;
     padding: 15px;
@@ -60,9 +60,7 @@ canvas {
 #cashierScreen .topBar .orderResults #results {
     width: calc(100% - 20px);
     height: 100%;
-    padding-left: 10px;
-    padding-right: 10px;
-    font-size: 1vw;
+    font-size: 1.5vw;
 }
 
 #cashierScreen .topBar {
@@ -108,9 +106,21 @@ canvas {
     display: flex;
     justify-content: center;
     align-items: center;
+    text-align: center;
     width: 5.3vw;
     height: 5.3vw;
-    font-size: 1vw;
+    font-size: 1.2vw;
+    transition: 0.1s;
+}
+
+.column div:hover {
+    border: 3px solid black;
+    width: calc(5.3vw - 2px);
+    height: calc(5.3vw - 2px);
+}
+.column div:active {
+    background-color: black;
+    color: white;
 }
 
 .cashierTill .leftSide .menu {

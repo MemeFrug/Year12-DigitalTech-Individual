@@ -10,10 +10,36 @@ const buttons = {
 }
 
 const orderingUI = {
-    data: {
-        food: [[],[],[]],
-        drinks: [[],[],[]],
-        other: [[],[],[]]
+    data: [
+        [[/*1*/], [/*2*/], [/*3*/]], // Food Columns
+        [[], [], []], // Drink
+        [[], [], []] // Other
+    ],
+
+    // Player Selected Order list
+    selectedOrderList: [],
+
+    // A easier way of getting the HTML Elements
+    elements: {
+        food: document.getElementById("FoodMenu"),
+        drinks: document.getElementById("DrinksMenu"),
+        other: document.getElementById("OtherMenu"),
+        orderList: document.getElementById("orderList"),
+        selectedOrderList: document.getElementById("selectedOrderList"),
+        orderTotal: document.getElementById("orderTotal")
+    },
+    newOrder: (count) => {
+        // Clear the order list html
+        orderingUI.elements.orderList.innerHTML = ""
+
+        // Get a random list to have as the order
+        const randomList = pickableItems.returnRandomList(count)
+        randomList.forEach(list => {
+            // Add the order element to the user interface
+            const listElement = document.createElement("li")
+            listElement.textContent = list.name
+            orderingUI.elements.orderList.appendChild(listElement)
+        });
     },
 
     //Initialise    
@@ -22,92 +48,101 @@ const orderingUI = {
         buttons.food.addEventListener("mouseup", () => orderingUI.changeMenu(val.categories.Food))
         buttons.drinks.addEventListener("mouseup", () => orderingUI.changeMenu(val.categories.Drinks))
         buttons.other.addEventListener("mouseup", () => orderingUI.changeMenu(val.categories.Other))
-    
-        // setUpOrdering(pickableItems.returnRandomList(3))
+        setUpOrdering(pickableItems.returnList())
     },
     changeMenu: (menu) => {
         /*
-        // menu is food if = 0
-        // menu is drinks if = 1
-        // menu is other if = 2
+        // menu food   = 0
+        // menu drinks = 1
+        // menu other  = 2
         */
         console.log("Changing menu to", menu);
-        switch (i) {
-            case i = val.categories.Food:
-                
+        switch (menu) {
+            case val.categories.Food:
+                orderingUI.elements.food.style.display = "flex"
+                orderingUI.elements.drinks.style.display = "none"
+                orderingUI.elements.other.style.display = "none"
                 break;
-            case i = val.categories.Drinks:
-                
+            case val.categories.Drinks:
+                orderingUI.elements.food.style.display = "none"
+                orderingUI.elements.drinks.style.display = "flex"
+                orderingUI.elements.other.style.display = "none"
+
                 break;
-            case i = val.categories.Other:
-                
+            case val.categories.Other:
+                orderingUI.elements.food.style.display = "none"
+                orderingUI.elements.drinks.style.display = "none"
+                orderingUI.elements.other.style.display = "flex"
+
                 break;
-        
+
             default:
+                console.warn("This should never happen.")
                 break;
         }
     },
     submit: () => {
         console.log("Submitting");
 
+        // Add the order to the game
+        Game.orders.push(orderingUI.selectedOrderList)
     }
+}
+
+function applyUserEvents(element, item) {
+    element.addEventListener("mouseup", () => {
+        console.log("Clicked", element.textContent);
+        const listElement = document.createElement("li")
+        listElement.textContent = element.textContent
+        orderingUI.elements.selectedOrderList.appendChild(listElement)
+        orderingUI.selectedOrderList.push(item)
+
+        //Update the total cost
+        let ordertotal = orderingUI.elements.orderTotal.textContent
+        orderingUI.elements.orderTotal.textContent = eval(ordertotal)+item.cost
+    })
 }
 
 function setUpOrdering(itemsList) {
     itemsList.forEach(item => {
-        switch (item.category) {
-            case i = val.categories.Food:
-                const count1 = orderingUI.data.food[0].length
-                const count2 = orderingUI.data.food[1].length
-                const count3 = orderingUI.data.food[2].length
+        let count1 = undefined
+        let count2 = undefined
+        let count3 = undefined
+        let pickedColumn = undefined
 
-                // Not Returning correct minimum
-                const minimumCount = Math.min(count1, count2, count3)
-                let pickedColumn = undefined
-                console.log(minimumCount, count1, count2, count3);
+        const div = document.createElement("div")
+        div.innerHTML = item.name
 
-                switch (minimumCount) {
-                    case count1:
-                        pickedColumn = document.getElementById("foodColumn1");
-                        break;
-                    case count2:
-                        pickedColumn = document.getElementById("foodColumn2");
-                        break;
-                    case count3:
-                        pickedColumn = document.getElementById("foodColumn3");
-                        break
-                    default:
-                        console.warn("This shouldnt happen.");
-                        break;
-                } 
-                break;
+        count1 = orderingUI.data[item.category][0].length
+        count2 = orderingUI.data[item.category][1].length
+        count3 = orderingUI.data[item.category][2].length
 
-            case i = val.categories.Drinks:
-                let drinkcolumn1 = document.getElementById("drinkColumn1");
-                let drinkcolumn2 = document.getElementById("drinkColumn2");
-                let drinkcolumn3 = document.getElementById("drinkColumn3");
-            
-                break;
-            case i = val.categories.Other:
-                let othercolumn1 = document.getElementById("otherColumn1");
-                let othercolumn2 = document.getElementById("otherColumn2");
-                let othercolumn3 = document.getElementById("otherColumn3");
-            
-                break;
+        const minimumCount = Math.min(count1, count2, count3)
+        console.log(minimumCount, count1, count2, count3);
         
-            default:
-                break;
+        if (minimumCount == count1) {
+            pickedColumn = document.getElementById(item.category+"Column1");
+            orderingUI.data[item.category][0].push(div)
+        } else if (minimumCount == count2) {
+            pickedColumn = document.getElementById(item.category+"Column2");
+            orderingUI.data[item.category][1].push(div)
+        } else if (minimumCount == count3) {
+            pickedColumn = document.getElementById(item.category+"Column3");
+            orderingUI.data[item.category][2].push(div)
         }
+
+        pickedColumn.appendChild(div)
+        applyUserEvents(div, item)
     });
 }
 
 function debugToggleOrdering() {
-                                //When interacting with an NPC, open the cashier screen up
-                                Game.inputType.enabled = !Game.inputType.enabled // Prevent moving the character or other key presses
-                                Game.interface.toggleUserInterface()
-                                Game.camera.draw = !Game.camera.draw // Prevent drawing under the UI 
+    //When interacting with an NPC, open the cashier screen up
+    Game.inputType.enabled = !Game.inputType.enabled // Prevent moving the character or other key presses
+    Game.interface.toggleUserInterface()
+    Game.camera.draw = !Game.camera.draw // Prevent drawing under the UI 
 
-                                setUpOrdering(pickableItems.returnList())
+    orderingUI.newOrder(4)
 }
 
 orderingUI.init()
