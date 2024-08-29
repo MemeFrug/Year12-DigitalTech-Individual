@@ -118,7 +118,6 @@ function setUpOrdering(itemsList) {
         count3 = orderingUI.data[item.category][2].length
 
         const minimumCount = Math.min(count1, count2, count3)
-        console.log(minimumCount, count1, count2, count3);
         
         if (minimumCount == count1) {
             pickedColumn = document.getElementById(item.category+"Column1");
