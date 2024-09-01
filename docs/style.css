@@ -197,7 +197,7 @@ canvas {
     border: solid 2px black;
 }
 
-#cashierScreen {
+.ui {
     display: flex;
     flex-direction: column-reverse;
     /* display: none; */
@@ -205,4 +205,33 @@ canvas {
     width: 100%;
     height: 100%;
     z-index: 2;
+}
+
+#MainMenu {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#MainMenu div {
+    width: 20vw;
+    height: 3.5vh;
+    border: 4px solid black;
+    margin: 10px;
+    text-align: center;
+    padding-top: 1vh;
+    border-radius: 10px;
+    transition: 0.2s;
+}
+
+#MainMenu div:hover {
+    width: 23vw;
+    background-color: rgba(0, 0, 0, 0.205);
+}
+#MainMenu div:active {
+    width: 20vw;
+    border-radius: 30px;
+    background-color: rgba(0, 0, 0, 0.205);
 }

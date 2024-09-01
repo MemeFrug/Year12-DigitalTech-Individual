@@ -260,13 +260,15 @@ window.addEventListener("load", () => {
         ctx.fillText("Score: "+ Game.world.score.toFixed(0), Game.settings.width - 590, 50)
     }})
 
-    // Start Listening to keyboard events
-    Game.inputType.style = Game.settings.inputStyle
-    Game.inputType.init()
-
-    Game.world.setup() // Setup the player
-    console.log("Done Setup, Game loop Starting");
-    Game.update() // Start the update loop
+    // Listen for play button, and set it up so it says the correct text
+    let playButton = document.getElementById("playButton")
+    playButton.textContent = `Play Level ${Game.world.status}`
+    playButton.addEventListener("mouseup", () => {
+        console.log("Pressed Play");
+        //Close the User Interface
+        document.getElementById('MainMenu').style.display = "none"
+        levels[Game.world.status].initialise()
+    })
 })
 
 // Get the last time to get the current Frame time

@@ -28,25 +28,11 @@ function getRandomInt(min, max) {
 }
 
 class Element {
-    Destroy(inDraw = false, inUpdate = false, inWorld = false, inNPC = false) {
-        if (inDraw) {
-            console.log(Game.drawLoop.indexOf(this));
-            Game.drawLoop.splice(Game.drawLoop.indexOf(this), 1);
-        }
-        if (inUpdate) {
-            Game.updateLoop.splice(Game.updateLoop.indexOf(this), 1);
-        }
-        if (inWorld) {
-            Game.world.objects.splice(Game.world.objects.indexOf(this), 1);
-        }
-        if (inNPC) {
-            levels[Game.world.status].npcList.splice(levels[Game.world.status].npcList.indexOf(this), 1)
-        }
-    }
+
 }
 
 class Square extends Element {
-    constructor(x = 0,y = 0, w=50,h=50) {
+    constructor(x = 0, y = 0, w = 50, h = 50) {
         super()
         this.x = x
         this.y = y
@@ -76,14 +62,18 @@ class Square extends Element {
         const drawLoop = Game.drawLoop.indexOf(this)
         const updateLoop = Game.updateLoop.indexOf(this)
         const worldLoop = Game.world.objects.indexOf(this)
+        const npcList = levels[Game.world.status].npcList.indexOf(this)
         if (drawLoop != -1) {
-            Game.drawLoop.splice(drawLoop,1)
+            Game.drawLoop.splice(drawLoop, 1)
         }
         if (updateLoop != -1) {
-            Game.updateLoop.splice(updateLoop,1)
+            Game.updateLoop.splice(updateLoop, 1)
         }
         if (worldLoop != -1) {
-            Game.world.objects.splice(worldLoop,1)
+            Game.world.objects.splice(worldLoop, 1)
+        }
+        if (npcList != -1) {
+            levels[Game.world.status].npcList.splice(npcList, 1)
         }
     }
 
@@ -103,39 +93,39 @@ class Square extends Element {
         let playerRight_ObjLeft = Math.abs((player.x + player.w) - obj.x);
         let playerLeft_ObjRight = Math.abs(player.x - (obj.x + obj.w));
         let playerBottom_ObjTop = Math.abs((player.y + player.h) - obj.y);
-    
+
         if ((player.y <= obj.y + obj.h && player.y + player.h > obj.y + obj.h) && (playerTop_ObjBottom < playerRight_ObjLeft && playerTop_ObjBottom < playerLeft_ObjRight)) {
             player.y = obj.y + obj.h;
             player.vy = -player.vy * dampFactor;
         }
         if ((player.y + player.h >= obj.y && player.y < obj.y) && (playerBottom_ObjTop < playerRight_ObjLeft && playerBottom_ObjTop < playerLeft_ObjRight)) {
-            player.y = obj.y - player.h; 
+            player.y = obj.y - player.h;
             player.vy = -player.vy * dampFactor;
         }
         if ((player.x + player.w >= obj.x && player.x < obj.x) && (playerRight_ObjLeft < playerTop_ObjBottom && playerRight_ObjLeft < playerBottom_ObjTop)) {
             player.x = obj.x - player.w;
-            player.vx = -player.vx * dampFactor; 
+            player.vx = -player.vx * dampFactor;
         }
         if ((player.x <= obj.x + obj.w && player.x + player.w > obj.x + obj.w) && (playerLeft_ObjRight < playerTop_ObjBottom && playerLeft_ObjRight < playerBottom_ObjTop)) {
             player.x = obj.x + obj.w;
-            player.vx = -player.vx * dampFactor; 
+            player.vx = -player.vx * dampFactor;
         }
     }
 
     detectCollision(obj) {
         // if (obj.isPlayer) return;
         // if (!this.isPlayer) return;
-        if (obj instanceof Square){
+        if (obj instanceof Square) {
             if (this.x + this.w >= obj.x &&     // r1 right edge past r2 left
                 this.x <= obj.x + obj.w &&       // r1 left edge past r2 right
                 this.y + this.h >= obj.y &&       // r1 top edge past r2 bottom
                 this.y <= obj.y + obj.h) {       // r1 bottom edge past r2 top
-                    // The two objects are colliding
-                    // this.x = obj.x + obj.w
-                    this.narrowPhase(obj)
-                    return true;
-              }
-              return false;
+                // The two objects are colliding
+                // this.x = obj.x + obj.w
+                this.narrowPhase(obj)
+                return true;
+            }
+            return false;
         }
         else {
             console.error("Class not setup for collision")
@@ -163,7 +153,7 @@ class Square extends Element {
         // Add square's velocity to coords with deltaTime
         this.x += this.vx * dt
         this.y += this.vy * dt
-        
+
         // Dampen The square's velocity
         this.vx *= 0.9
         this.vy *= 0.9
@@ -174,13 +164,13 @@ class Square extends Element {
 }
 
 class Interactor extends Element {
-    constructor(x,y,w,h) {
+    constructor(x, y, w, h) {
         super()
         this.x = x
         this.y = y
         this.w = w
         this.h = h
-        
+
         this.parent = undefined
 
         this.scripts = []
@@ -199,13 +189,13 @@ class Interactor extends Element {
         const updateLoop = Game.updateLoop.indexOf(this)
         const worldLoop = Game.world.objects.indexOf(this)
         if (drawLoop != -1) {
-            Game.drawLoop.splice(drawLoop,1)
+            Game.drawLoop.splice(drawLoop, 1)
         }
         if (updateLoop != -1) {
             Game.updateLoop.splice(updateLoop, 1)
         }
         if (worldLoop != -1) {
-            Game.world.objects.splice(worldLoop,1)
+            Game.world.objects.splice(worldLoop, 1)
         }
     }
 
@@ -229,15 +219,15 @@ class Interactor extends Element {
     isTouching(obj) {
         // if (obj.isPlayer) return;
         // if (!this.isPlayer) return;
-        if (obj instanceof Square){ // Check if it has class square so no errors are thrown
+        if (obj instanceof Square) { // Check if it has class square so no errors are thrown
             if (this.x + this.w >= obj.x &&     // r1 right edge past r2 left
                 this.x <= obj.x + obj.w &&       // r1 left edge past r2 right
                 this.y + this.h >= obj.y &&       // r1 top edge past r2 bottom
                 this.y <= obj.y + obj.h) {       // r1 bottom edge past r2 top
-                    // The two objects are colliding return true
-                    return true;
-              }
-              return false;
+                // The two objects are colliding return true
+                return true;
+            }
+            return false;
         }
         else {
             console.error("Class not setup for collision")
@@ -246,7 +236,7 @@ class Interactor extends Element {
 }
 
 class Input {
-    constructor(style="keyboard") {
+    constructor(style = "keyboard") {
         this.style = style
 
         this.enabled = true
@@ -338,18 +328,18 @@ class Input {
 const pickableItems = {
     items: [
         // Each entry contains a name, category and cost of the product
-        {name: "Cheese Balls", category: val.categories.Food, cost: 10},
-        {name: "Coke", category: val.categories.Drinks, cost: 10},
-        {name: "Cup With Logo", category: val.categories.Other, cost: 10},
-        {name: "Pepsi", category: val.categories.Drinks, cost: 10},
-        {name: "Fanta", category: val.categories.Drinks, cost: 10},
-        {name: "Creaming Soda", category: val.categories.Drinks, cost: 10},
-        {name: "Pizza", category: val.categories.Food, cost: 10},
-        {name: "Hot Fudge Sundae", category: val.categories.Other, cost: 10},
-        {name: "Chicken Tenders", category: val.categories.Food, cost: 10},
-        {name: "Hash Browns", category: val.categories.Food, cost: 10},
-        {name: "Chicken Soup", category: val.categories.Food, cost: 10},
-        {name: "Brownies", category: val.categories.Other, cost: 10},
+        { name: "Cheese Balls", category: val.categories.Food, cost: 10 },
+        { name: "Coke", category: val.categories.Drinks, cost: 10 },
+        { name: "Cup With Logo", category: val.categories.Other, cost: 10 },
+        { name: "Pepsi", category: val.categories.Drinks, cost: 10 },
+        { name: "Fanta", category: val.categories.Drinks, cost: 10 },
+        { name: "Creaming Soda", category: val.categories.Drinks, cost: 10 },
+        { name: "Pizza", category: val.categories.Food, cost: 10 },
+        { name: "Hot Fudge Sundae", category: val.categories.Other, cost: 10 },
+        { name: "Chicken Tenders", category: val.categories.Food, cost: 10 },
+        { name: "Hash Browns", category: val.categories.Food, cost: 10 },
+        { name: "Chicken Soup", category: val.categories.Food, cost: 10 },
+        { name: "Brownies", category: val.categories.Other, cost: 10 },
     ],
     // Returns an array that contains specified amount of items
     returnRandomList: (numberOfItems) => {
@@ -375,16 +365,32 @@ const pickableItems = {
 const levels = [
     {   //level 0
         spawnerLines: [
-            {y:500},
-            {y:700},
-            {y:900},
+            { y: 500 },
+            { y: 700 },
+            { y: 900 },
         ],
         spawnTimer: 0, // Timer for NPC spawning.
-        spawnSpeed: 2400, // Spawn Speed of NPCs
-        maxNPCCount: 2,
+        spawnSpeed: 1000, // Spawn Speed of NPCs
+        maxNPCCount: 10,
         maxItemList: 2, // How many items
 
         npcList: [],
+
+        initialise: () => {
+            // Start Listening to keyboard events
+            Game.inputType.style = Game.settings.inputStyle
+            Game.inputType.init()
+
+            Game.world.setup() // Setup the player
+            console.log("Done Setup, Game loop Starting");
+            Game.update() // Start the update loop
+        },
+
+        endEvent: () => {
+            // Check how many npcs are active and deduct 5 points per npc
+            const totalNPC = levels[0].npcList.length
+            Game.score
+        },
 
         spawner: (dt) => {
             let level = levels[0]
