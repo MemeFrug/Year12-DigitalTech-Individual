@@ -16,6 +16,8 @@ const orderingUI = {
         [[], [], []] // Other
     ],
 
+    npcInstance: undefined,
+
     // Player Selected Order list
     selectedOrderList: [],
 
@@ -31,6 +33,8 @@ const orderingUI = {
     newOrder: (count) => {
         // Clear the order list html
         orderingUI.elements.orderList.innerHTML = ""
+
+        //Reset the total cost
 
         // Get a random list to have as the order
         const randomList = pickableItems.returnRandomList(count)
@@ -84,8 +88,29 @@ const orderingUI = {
     submit: () => {
         console.log("Submitting");
 
+        // Re enable gameplay
+        Game.inputType.enabled = true
+        Game.interface.disableUserInterface()
+        Game.camera.draw = true
+
+        if (orderingUI.npcInstance) {
+            orderingUI.npcInstance.leaving = true
+            orderingUI.npcInstance.y = 200
+            orderingUI.npcInstance.x += 50
+            orderingUI.npcInstance.removeChildren()
+        }
+
+        //Add the total cost to the score, need to make it scale with how many got right
+        Game.world.score += eval(orderingUI.elements.orderTotal.textContent)
+        orderingUI.elements.orderTotal.textContent = "0" // Reset it back to zero dollerydoos
+
+        // Reset the selected items
+        orderingUI.elements.selectedOrderList.innerHTML = ""
+
         // Add the order to the game
         Game.orders.push(orderingUI.selectedOrderList)
+        orderingUI.selectedOrderList = [] // Clear it,
+        console.log(Game.orders);
     }
 }
 
@@ -133,15 +158,6 @@ function setUpOrdering(itemsList) {
         pickedColumn.appendChild(div)
         applyUserEvents(div, item)
     });
-}
-
-function debugToggleOrdering() {
-    //When interacting with an NPC, open the cashier screen up
-    Game.inputType.enabled = !Game.inputType.enabled // Prevent moving the character or other key presses
-    Game.interface.toggleUserInterface()
-    Game.camera.draw = !Game.camera.draw // Prevent drawing under the UI 
-
-    orderingUI.newOrder(4)
 }
 
 orderingUI.init()

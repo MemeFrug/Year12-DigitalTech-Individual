@@ -12,6 +12,7 @@ html, body {
 .Interface {
     display: flex;
     position: relative;
+    justify-content: center;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     user-select: none;
 }
@@ -50,7 +51,7 @@ canvas {
 }
 
 #cashierScreen .topBar .orderResults {
-    width: 20%;
+    width: 15%;
     margin: 1px;
     border: solid 2px black;
     border-radius: 15px;
@@ -110,13 +111,12 @@ canvas {
     width: 5.3vw;
     height: 5.3vw;
     font-size: 1.2vw;
-    transition: 0.1s;
+    transition: 0.5s;
 }
 
 .column div:hover {
-    border: 3px solid black;
-    width: calc(5.3vw - 2px);
-    height: calc(5.3vw - 2px);
+    border: 10px dotted black;
+    background-color: rgba(0, 0, 0, 0.336);
 }
 .column div:active {
     background-color: black;

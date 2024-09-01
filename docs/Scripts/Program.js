@@ -63,9 +63,35 @@ class Square extends Element {
         }
         this.isPlayer = false
 
+        this.children = [
+
+        ]
+
         this.scripts = [
 
         ]
+    }
+
+    remove() {
+        const drawLoop = Game.drawLoop.indexOf(this)
+        const updateLoop = Game.updateLoop.indexOf(this)
+        const worldLoop = Game.world.objects.indexOf(this)
+        if (drawLoop != -1) {
+            Game.drawLoop.splice(drawLoop,1)
+        }
+        if (updateLoop != -1) {
+            Game.updateLoop.splice(updateLoop,1)
+        }
+        if (worldLoop != -1) {
+            Game.world.objects.splice(worldLoop,1)
+        }
+    }
+
+    removeChildren() {
+        this.children.forEach(element => {
+            element.remove()
+        });
+        this.children = []
     }
 
     //https://stackoverflow.com/questions/67747353/javascript-how-to-have-collision-with-character-and-an-object
@@ -155,18 +181,32 @@ class Interactor extends Element {
         this.w = w
         this.h = h
         
-        this.destroyWithParent = false
         this.parent = undefined
 
         this.scripts = []
     }
 
-    setParent(parent, destroywith = true) {
+    setParent(parent) {
         this.parent = parent
-        this.destroyWithParent = destroywith
+        parent.children.push(this)
 
         this.x = parent.x - this.w - parent.w - 10
         this.y = parent.y
+    }
+
+    remove() {
+        const drawLoop = Game.drawLoop.indexOf(this)
+        const updateLoop = Game.updateLoop.indexOf(this)
+        const worldLoop = Game.world.objects.indexOf(this)
+        if (drawLoop != -1) {
+            Game.drawLoop.splice(drawLoop,1)
+        }
+        if (updateLoop != -1) {
+            Game.updateLoop.splice(updateLoop, 1)
+        }
+        if (worldLoop != -1) {
+            Game.world.objects.splice(worldLoop,1)
+        }
     }
 
     draw(ctx) {

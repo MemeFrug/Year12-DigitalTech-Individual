@@ -22,7 +22,15 @@ const Game = {
         opened: false,
         element: document.getElementsByClassName("Interface")[0],
         userInterfaceElement: document.getElementById("cashierScreen"),
-        // Toggle the UI and return current visible state of UI
+        // The State of the UI and return current visible state of UI
+        enableUserInterface: () => {
+            Game.interface.opened = true
+            Game.interface.userInterfaceElement.style.display = "flex"
+        },
+        disableUserInterface: () => {
+            Game.interface.opened = false
+            Game.interface.userInterfaceElement.style.display = "none"
+        },
         toggleUserInterface: () => {
             Game.interface.opened = !Game.interface.opened
             if (Game.interface.opened) Game.interface.userInterfaceElement.style.display = "flex"
@@ -71,6 +79,7 @@ const Game = {
         ctx.canvas.width = Game.settings.width;
         ctx.canvas.height = Game.settings.height;
         ctx.canvas.style.width = "calc(100% - 2px)"
+        ctx.canvas.style.maxWidth = "1920px"
         Game.interface.element.style.width = "100%"
     },
     inputType: new Input(),
@@ -104,12 +113,13 @@ const Game = {
 
             const npc = new Square(0, pickedLine.y,100,100)
             npc.x = Game.settings.width - npc.w
+            npc.leaving = false
 
             // NPC Script
             npc.scripts.push(() => {
-                if (npc.x >= 975 + npc.w) {
+                if (npc.x >= 990 + npc.w && !npc.leaving) {
                     npc.vx = -npc.speed
-                } else {
+                } else if (!npc.leaving) {
                     if (!npc.interactionSpawned){
                         const interaction = new Interactor(0,0,100,100)
                         npc.interactionSpawned = true
@@ -118,15 +128,21 @@ const Game = {
                         interaction.scripts.push(() => {
                             //When interacting with an NPC, open the cashier screen up
                             Game.inputType.enabled = false // Prevent moving the character or other key presses
-                            Game.interface.toggleUserInterface()
+                            Game.interface.enableUserInterface()
                             orderingUI.newOrder(Game.world.status*2+1) // Create a brand new order
+                            orderingUI.npcInstance = npc
                             Game.camera.draw = false // Prevent drawing under the UI 
                         })
 
                         interaction.setParent(npc, true)
                         Game.world.interactors.push(interaction)
-                        Game.drawLoop.unshift(interaction) // Add to draw loop
+                        Game.drawLoop.unshift(interaction) // Add to start of draw loop
                         Game.updateLoop.push(interaction) // Add to update loop
+                    }
+                } else { // When the npc is leaving
+                    npc.vx = npc.speed
+                    if (npc.x >= 1700) {
+                        npc.remove() // Remove the npc once it leaves...
                     }
                 }
             })
@@ -217,21 +233,32 @@ window.addEventListener("load", () => {
     Game.inputType.call.left.push(() => {Game.player.movement.left = Game.player.speed})
     Game.inputType.call.right.push(() => {Game.player.movement.right = Game.player.speed})
 
-    // Set event listeners for when lifting inputs
+    // Set event listeners for when letting go from inputs
     Game.inputType.upcall.up.push(() => {Game.player.movement.up = 0})
     Game.inputType.upcall.down.push(() => {Game.player.movement.down = 0})
     Game.inputType.upcall.left.push(() => {Game.player.movement.left = 0})
     Game.inputType.upcall.right.push(() => {Game.player.movement.right = 0})
     
+    // Debug Frame Time display
     Game.UserInterfaceLoop.push({draw:(ctx) => {
         ctx.fillStyle = "black"
         ctx.font = "35px Verdana"
-        ctx.fillText("dt: "+ Game.frameTime.toFixed(1), 30, 40)}})
+        ctx.fillText("dt: "+ Game.frameTime.toFixed(1), 30, 40)
+    }})
 
+    // Timer Display
     Game.UserInterfaceLoop.push({draw:(ctx) => {
         ctx.fillStyle = "black"
         ctx.font = "35px Verdana"
-        ctx.fillText("Timer: "+ Game.world.time.toFixed(0), Game.settings.width - 500, 50)}})
+        ctx.fillText("Timer: "+ Game.world.time.toFixed(0)+" | ", Game.settings.width - 800, 50)
+    }})
+
+    // Score Display
+    Game.UserInterfaceLoop.push({draw:(ctx) => {
+        ctx.fillStyle = "black"
+        ctx.font = "35px Verdana"
+        ctx.fillText("Score: "+ Game.world.score.toFixed(0), Game.settings.width - 590, 50)
+    }})
 
     // Start Listening to keyboard events
     Game.inputType.style = Game.settings.inputStyle
