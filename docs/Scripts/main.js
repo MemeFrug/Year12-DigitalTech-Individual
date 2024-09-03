@@ -99,7 +99,7 @@ const Game = {
         objects: [
             // Walls to the restuarant
             new Square(970,10, 100,1060),
-            new Square(-90,0, 100,1080),
+            new Square(-90,0, 100,1100),
             new Square(0,-90, 1070,100),
             new Square(0,1070, 1070,100),
         ],

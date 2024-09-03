@@ -21,6 +21,9 @@ const orderingUI = {
     // Player Selected Order list
     selectedOrderList: [],
 
+    // The required Order List
+    requiredOrderList: [],
+
     // A easier way of getting the HTML Elements
     elements: {
         food: document.getElementById("FoodMenu"),
@@ -44,6 +47,7 @@ const orderingUI = {
             listElement.textContent = list.name
             orderingUI.elements.orderList.appendChild(listElement)
         });
+        orderingUI.requiredOrderList = randomList
     },
 
     //Initialise    
@@ -100,8 +104,31 @@ const orderingUI = {
             orderingUI.npcInstance.removeChildren()
         }
 
+        // Check how many of the orders got correct.
+        console.log("=======================");
+        let copyOfRequiredList = orderingUI.requiredOrderList
+        let howManyCorrect = 0
+        orderingUI.selectedOrderList.forEach(order => {
+            let 
+            copyOfRequiredList.forEach(reqOrder => {
+                console.log(order, " == ", reqOrder);
+                if (order == reqOrder) {
+                    console.log(true);
+                    howManyCorrect++;
+                    // Remove the order in the copied list
+                    copyOfRequiredList.splice(copyOfRequiredList.indexOf(reqOrder), 1)
+                    
+                }
+            });
+        });
+        console.log(howManyCorrect);
+        console.log("=======================");
+        
+
         //Add the total cost to the score, need to make it scale with how many got right
         Game.world.score += eval(orderingUI.elements.orderTotal.textContent)
+
+        
         orderingUI.elements.orderTotal.textContent = "0" // Reset it back to zero dollerydoos
 
         // Reset the selected items

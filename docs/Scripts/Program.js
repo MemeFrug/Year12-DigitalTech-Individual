@@ -134,7 +134,7 @@ class Square extends Element {
 
     draw(ctx) {
         ctx.fillStyle = "black";
-        ctx.fillRect(this.x, this.y, this.w, this.h);
+        ctx.fillRect(this.x+1, this.y+1, this.w-1, this.h-1); // The constants are the margin
     }
 
     movementUpdate(dt) {
