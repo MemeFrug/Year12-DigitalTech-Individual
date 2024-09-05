@@ -32,7 +32,7 @@ class Element {
 }
 
 class Square extends Element {
-    constructor(x = 0, y = 0, w = 50, h = 50) {
+    constructor(x = 0, y = 0, w = 50, h = 50, isStatic = false) {
         super()
         this.x = x
         this.y = y
@@ -41,6 +41,7 @@ class Square extends Element {
         this.vx = 0
         this.vy = 0
         this.speed = .1
+        this.static = isStatic
         this.movement = { // Constant Values Applied to velocity
             up: 0,
             down: 0,
@@ -113,6 +114,7 @@ class Square extends Element {
     }
 
     detectCollision(obj) {
+        if (obj.static == true && this.static == true) return; // Dont colide between two static points
         // if (obj.isPlayer) return;
         // if (!this.isPlayer) return;
         if (obj instanceof Square) {
@@ -368,25 +370,32 @@ const pickableItems = {
 
 const levels = [
     {   //level 0
+        data: {
+            timer1: 0,
+        },
         spawnerLines: [
             { y: 500 },
             { y: 700 },
             { y: 900 },
         ],
-        description: "The first level of the restuarant trainer, customers spawn at most twice, and you must complete as many orders as you can in 60 seconds, The score needed to pass is 30 points",
+        description: "The first level of the restuarant trainer, customers spawn at most twice, and you must complete as many orders as you can in 10 seconds, The score needed to pass is 20 points",
         spawnTimer: 0, // Timer for NPC spawning.
-        spawnSpeed: 1000, // Spawn Speed of NPCs
+        spawnSpeed: 2000, // Spawn Speed of NPCs
         maxNPCCount: 2,
         maxItemList: 2, // How many items
-        timeLimit: 60, // Time limit for the level in seconds
-        scoreNeeded: 30,
+        timeLimit: 10, // Time limit for the level in seconds
+        scoreNeeded: 20,
+        savedScore: 0,
+        idleScoreTakeRate: 0.0005,
         npcList: [],
 
         initialise: () => {
-            // Start Listening to keyboard events
+            // Start Listening to keyboard events THIS MIGHT BREAK THINGS
             Game.inputType.style = Game.settings.inputStyle
             Game.inputType.init()
 
+            Game.world.time = levels[0].timeLimit
+            Game.world.timerEnabled = true
             Game.world.setup() // Setup the player
             console.log("Done Setup, Game loop Starting");
             Game.update() // Start the update loop
@@ -421,6 +430,9 @@ const levels = [
 
         update: (dt) => {
             levels[0].spawner(dt)
+
+            // Insentivise Taking Orders by taking score away
+            Game.world.score -= levels[0].idleScoreTakeRate * dt
         }
     },
     {   //level 1

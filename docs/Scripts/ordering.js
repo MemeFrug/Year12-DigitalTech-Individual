@@ -100,13 +100,12 @@ const orderingUI = {
         // Re enable gameplay
         Game.inputType.enabled = true
         Game.interface.disableUserInterface()
-        Game.camera.draw = true
 
-        if (orderingUI.npcInstance) {
-            orderingUI.npcInstance.leaving = true
-            orderingUI.npcInstance.y = 200
-            orderingUI.npcInstance.x += 50
-            orderingUI.npcInstance.removeChildren()
+        if (orderingUI.npcInstance) { // Check if the npc exists
+            orderingUI.npcInstance.leaving = true // let its custom update script know its leaving 
+            orderingUI.npcInstance.y = 200 // Move it out of the way
+            orderingUI.npcInstance.x += 50 
+            orderingUI.npcInstance.removeChildren() // Remove the interactors
         }
 
         // Check how many of the orders got correct.

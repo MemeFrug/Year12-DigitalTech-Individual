@@ -27,10 +27,12 @@ const Game = {
         enableUserInterface: () => {
             Game.interface.opened = true
             Game.interface.userInterfaceElement.style.display = "flex"
+            Game.camera.draw = false
         },
         disableUserInterface: () => {
             Game.interface.opened = false
             Game.interface.userInterfaceElement.style.display = "none"
+            Game.camera.draw = true
         },
         toggleUserInterface: () => {
             Game.interface.opened = !Game.interface.opened
@@ -82,26 +84,20 @@ const Game = {
         ctx.canvas.style.width = "calc(100% - 2px)" // Make the canvas's width entire width of Container taking into account the border style
     },
     inputType: new Input(),
-    player: new Square(10, 50, 100, 100),
+    player: new Square(100, 100, 100, 100),
     orders: [
         //Each of the orders
     ],
     world: {
         score: 0,
-        status: 0,
+        status: 0, // Level Status, identifier
         time: undefined,
         timerLoops: [],
-        timerEnabled: true,
+        timerEnabled: false,
         interactors: [
 
         ],
-        objects: [
-            // Walls to the restuarant
-            new Square(970, 10, 100, 1060),
-            new Square(-90, 0, 100, 1100),
-            new Square(0, -90, 1070, 100),
-            new Square(0, 1070, 1070, 100),
-        ],
+        objects: [],
         spawnNPC: () => {
             // Pick from three possible lines
             const lines = levels[Game.world.status].spawnerLines
@@ -117,7 +113,7 @@ const Game = {
             // NPC Script, its update function for arriving at the counter and leaving.
             npc.scripts.push(() => {
                 if (npc.x >= 990 + npc.w && !npc.leaving) {
-                    npc.vx = -npc.speed - .5
+                    npc.vx = -npc.speed - .4
                 } else if (!npc.leaving) {
                     if (!npc.interactionSpawned) {
                         const interaction = new Interactor(0, 0, 100, 100)
@@ -130,7 +126,6 @@ const Game = {
                             Game.interface.enableUserInterface()
                             orderingUI.newOrder(Game.world.status * 2 + 2) // Create a brand new order
                             orderingUI.npcInstance = npc
-                            Game.camera.draw = false // Prevent drawing under the UI 
                         })
 
                         interaction.setParent(npc, true)
@@ -139,7 +134,7 @@ const Game = {
                         Game.updateLoop.push(interaction) // Add to update loop
                     }
                 } else { // When the npc is leaving
-                    npc.vx = npc.speed // Add the speed of the npc to the npc to ensure it travels to the right of the screen.
+                    npc.vx = npc.speed + .2 // Add the speed of the npc to the npc to ensure it travels to the right of the screen.
                     if (npc.x >= 1800) {
                         npc.remove() // Remove the npc once it leaves...
                     }
@@ -158,6 +153,46 @@ const Game = {
             Game.updateLoop.push(npc) // Add to update loop
         },
         setup: () => {
+            // Overide all objects, add the walls
+            Game.world.objects = [            
+                // Walls to the restuarant
+                new Square(970, 10, 100, 1060, true),
+                new Square(-50, 0, 100, 1100, true),
+                new Square(0, -90, 1070, 100, true),
+                new Square(0, 1070, 1070, 100, true),
+            ]
+
+            // Debug Frame Time display
+            Game.UserInterfaceLoop.push({
+                draw: (ctx) => {
+                    ctx.fillStyle = "black"
+                    ctx.font = "35px Verdana"
+                    ctx.fillText(Math.round(1000 / Game.frameTime) + "FPS", 30, 40)
+                }
+            })
+        
+            // Timer Display
+            Game.UserInterfaceLoop.push({
+                draw: (ctx) => {
+                    ctx.fillStyle = "black"
+                    ctx.font = "35px Verdana"
+                    ctx.fillText("Timer: " + Game.world.time.toFixed(0) + " | ", Game.settings.width - 800, 50)
+                }
+            })
+        
+            // Score Display
+            Game.UserInterfaceLoop.push({
+                draw: (ctx) => {
+                    ctx.fillStyle = "black"
+                    ctx.font = "35px Verdana"
+                    ctx.fillText("Score: " + Game.world.score.toFixed(0), Game.settings.width - 590, 50)
+                }
+            })
+            
+            // Reset the position just in case
+            Game.player.x = 100
+            Game.player.y = 100
+
             Game.world.objects.forEach(obj => {
                 Game.drawLoop.push(obj)
                 Game.updateLoop.push(obj)
@@ -168,6 +203,73 @@ const Game = {
             Game.world.objects.push(Game.player)
             Game.player.isPlayer = true
         }
+    },
+    clean: () => {
+        Game.world.interactors = [];
+        Game.world.objects = [];
+        Game.drawLoop = [];
+        Game.updateLoop = [];
+        Game.UserInterfaceLoop = [];
+        levels[Game.world.status].npcList = [];
+        Game.world.score = 0;
+        console.log("Finished Clearing the Level");
+    },
+    localStorage: {
+        saveAllScores: () => {
+            let levelScores = [] // The position in the array is the level... and the value is the score
+            levels.forEach(level => {
+                if (level.savedScore) {
+                    levelScores[levels.indexOf(level)] = level.savedScore.toFixed(1)
+                }
+            });
+            console.log("Saved, ", levelScores);
+            localStorage.setItem("levelScores", JSON.stringify(levelScores)); // Converts the array to JSON string format for parsing later
+        },
+        loadAllScores: () => {
+            const data = JSON.parse(localStorage.getItem("levelScores"));
+            if (data) {
+                console.log("Got from local Storage", data);
+                for (let i = 0; i < data.length; i++) {
+                    const element = data[i];
+                    levels[i].savedScore = JSON.parse(element)
+                }
+            } else {
+                console.warn("No data for localStorage 'levelScores'")
+            }
+        }
+    },
+    finishLevel: () => {
+        console.log("Triggering 'finishLevel()'");
+        //Close any possible UIs
+        Game.interface.disableUserInterface()
+
+        // Open up the end Game Menu
+        const endGameMenu = document.getElementById("endGameMenu")
+        endGameMenu.style.display = "flex"
+
+        // Set the current score into the saved levels  
+        if (levels[Game.world.status].savedScore < Game.world.score) {
+            levels[Game.world.status].savedScore = Game.world.score
+
+            // Save the score
+            Game.localStorage.saveAllScores()
+        }
+
+
+        if (levels[Game.world.status].scoreNeeded > Game.world.score) {
+            document.getElementById("levelSucceeded").textContent = "Failed"
+        }
+        else document.getElementById("levelSucceeded").textContent = "Succeeded"
+
+        document.getElementById("endGameMenuContinueButton").addEventListener("mouseup", () => {
+            // After clicking continue, close menu
+            endGameMenu.style.display = "none"
+            // Open up the main menu
+            document.getElementById("MainMenu").style.display = "flex"
+        })
+
+        // Clean the game
+        Game.clean();
     }
 }
 
@@ -238,33 +340,6 @@ window.addEventListener("load", () => {
     Game.inputType.upcall.left.push(() => { Game.player.movement.left = 0 })
     Game.inputType.upcall.right.push(() => { Game.player.movement.right = 0 })
 
-    // Debug Frame Time display
-    Game.UserInterfaceLoop.push({
-        draw: (ctx) => {
-            ctx.fillStyle = "black"
-            ctx.font = "35px Verdana"
-            ctx.fillText(Math.round(1000 / Game.frameTime) + "FPS", 30, 40)
-        }
-    })
-
-    // Timer Display
-    Game.UserInterfaceLoop.push({
-        draw: (ctx) => {
-            ctx.fillStyle = "black"
-            ctx.font = "35px Verdana"
-            ctx.fillText("Timer: " + Game.world.time.toFixed(0) + " | ", Game.settings.width - 800, 50)
-        }
-    })
-
-    // Score Display
-    Game.UserInterfaceLoop.push({
-        draw: (ctx) => {
-            ctx.fillStyle = "black"
-            ctx.font = "35px Verdana"
-            ctx.fillText("Score: " + Game.world.score.toFixed(0), Game.settings.width - 590, 50)
-        }
-    })
-
     // Set up the level select screen
     setUpLevelSelect()
 
@@ -303,20 +378,20 @@ function startLevel(selectedLevel) {
     // Change world settings
     Game.world.time=levels[selectedLevel].timeLimit
     setTimeout(() => {
-        //Open up level animation
-        document.getElementById("animator").style.display = "flex"
-    },1800) // initialse in 1.8 second
-
-    setTimeout(() => {
         // close the level select
         document.getElementById("LevelSelect").style.display = "none"
         //Open up level animation
         document.getElementById("animator").style.display = "flex"
+        document.getElementById("animator").textContent = "Loading..."
+    },1900) // initialse in 1.8 second
+
+    setTimeout(() => {
         // Initialise the level
         levels[Game.world.status].initialise()
         //openning up animation
+        document.getElementById("animator").textContent = "Finished!"
         document.getElementById("animator").style.width = "0%"
-    },2000) // initialse in 2 second
+    },4000) // initialse in 3 second
 }
 
 function setUpLevelSelect() {
@@ -325,6 +400,7 @@ function setUpLevelSelect() {
     const levelInfoScore = document.getElementById("levelScore")
     const levelInfoTimeLimit = document.getElementById("timeLimit")
     const levelDescription = document.getElementById("levelDescription")
+    const failedLevel = document.getElementById("failedLevel")
     //Listen for the play button
     document.getElementById("playLevelButton").addEventListener("mouseup", () => {
         startLevel(Game.world.status)
@@ -356,10 +432,11 @@ function setUpLevelSelect() {
 
             // Change menu on right
             levelName.textContent = "Level " + (levelNumber+1) // Change the name of the level
-            levelInfoScore.textContent = "0" // THIS NEEDS TO CHANGE TO ADD FROM LOCAL STORAGE
-            levelInfoTimeLimit.textContent =  level.timeLimit //
+            levelInfoScore.textContent = level.savedScore // Gathered From Local Storage
+            levelInfoTimeLimit.textContent =  (level.timeLimit/60).toFixed(2) // Convert the time limit to seconds
             levelDescription.textContent = level.description
-
+            if (level.scoreNeeded >= level.savedScore) failedLevel.textContent = "Incomplete Level"
+            else failedLevel.textContent = "Complete Level"
             // Change game states
             Game.world.status = levelNumber
         })
@@ -368,10 +445,18 @@ function setUpLevelSelect() {
 
 // This function is used for the main menu when opening up the level screen for opening up the UI element
 function levelSelect() {
+    clearBackgroundClickButton()
+    document.getElementById("animator").style.display = "none"
+    document.getElementById("animator").style.width = "100%"
     // Close the level select descriptor
     document.getElementById("levelSelectRight").style.width = "0%"
+    document.getElementById("levelSelectRight").style.backgroundColor = "rgba(0,0,0,0)"
+    // Open up the level select selector
+    document.getElementById("levelSelectLeft"). style.width = "100%"
     // Open up the level Select
     document.getElementById("LevelSelect").style.display = "flex"
+
+    Game.localStorage.loadAllScores()
 }
 
 // Get the last time to get the current Frame time
@@ -424,11 +509,14 @@ function Update(delta) {
     if (Game.world.timerEnabled && Game.world.time > 0) {
         Game.world.timerEnabled = true // This might break the loop
         Game.world.time -= deltaTime / 1000
+
+        // Call the level's update function
+        levels[Game.world.status].update(deltaTime)
     } else if (Game.world.timerEnabled) {
         Game.world.timerEnabled = false
+
+        Game.finishLevel();
     }
-    // Call the level's update function
-    levels[Game.world.status].update(deltaTime)
 
 
     //Draw Everything

@@ -91,6 +91,17 @@ canvas {
     transition: 2s ease-out;
 }
 
+.endGameMenu { 
+    flex-direction: column !important; 
+    justify-content: center;
+    align-items: center;
+}
+
+.endGameMenu .button { 
+    width: 10vw;
+    height: 4vh;
+}
+
 #LevelSelect {
     display: none; 
     flex-direction: row;
@@ -102,7 +113,7 @@ canvas {
 }
 
 #animator {
-    overflow: auto;
+    overflow: hidden;
     justify-content: center;
     align-items: center;
     color: white;
@@ -164,8 +175,8 @@ canvas {
     justify-content: center;
     transition: 1s;
     width: 60%;
-    overflow: auto;
-    border-left: 3px solid black;
+    overflow: hidden;
+    border-left: 5px dotted black;
 }
 
 .button:hover {
