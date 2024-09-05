@@ -40,7 +40,7 @@ class Square extends Element {
         this.h = h
         this.vx = 0
         this.vy = 0
-        this.speed = .15
+        this.speed = .07
         this.movement = { // Constant Values Applied to velocity
             up: 0,
             down: 0,
@@ -371,7 +371,7 @@ const levels = [
         ],
         spawnTimer: 0, // Timer for NPC spawning.
         spawnSpeed: 1000, // Spawn Speed of NPCs
-        maxNPCCount: 10,
+        maxNPCCount: 2,
         maxItemList: 2, // How many items
 
         npcList: [],

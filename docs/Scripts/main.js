@@ -2,6 +2,7 @@ console.log("Main.js had loaded")
 
 const Game = {
     frameTime: 16,
+    currTime: 0,
     paused: false,
     applyTransformations: () => {
         Game.ctx.translate(Game.camera.x, Game.camera.y)
@@ -76,11 +77,9 @@ const Game = {
         }
     },
     canvasResize: () => {
-        ctx.canvas.width = Game.settings.width;
-        ctx.canvas.height = Game.settings.height;
-        ctx.canvas.style.width = "calc(100% - 2px)"
-        ctx.canvas.style.maxWidth = "1920px"
-        Game.interface.element.style.width = "100%"
+        ctx.canvas.width = Game.settings.width; // Internal width (Resolution)
+        ctx.canvas.height = Game.settings.height; // Internal height (Resolution)
+        ctx.canvas.style.width = "calc(100% - 2px)" // Make the canvas's width entire width of Container taking into account the border style
     },
     inputType: new Input(),
     player: new Square(10,50,100,100),
@@ -115,7 +114,7 @@ const Game = {
             npc.x = Game.settings.width - npc.w
             npc.leaving = false
 
-            // NPC Script
+            // NPC Script, its update function for arriving at the counter and leaving.
             npc.scripts.push(() => {
                 if (npc.x >= 990 + npc.w && !npc.leaving) {
                     npc.vx = -npc.speed
@@ -129,7 +128,7 @@ const Game = {
                             //When interacting with an NPC, open the cashier screen up
                             Game.inputType.enabled = false // Prevent moving the character or other key presses
                             Game.interface.enableUserInterface()
-                            orderingUI.newOrder(Game.world.status*2+1) // Create a brand new order
+                            orderingUI.newOrder(Game.world.status*2+2) // Create a brand new order
                             orderingUI.npcInstance = npc
                             Game.camera.draw = false // Prevent drawing under the UI 
                         })
@@ -140,8 +139,8 @@ const Game = {
                         Game.updateLoop.push(interaction) // Add to update loop
                     }
                 } else { // When the npc is leaving
-                    npc.vx = npc.speed
-                    if (npc.x >= 1700) {
+                    npc.vx = npc.speed // Add the speed of the npc to the npc to ensure it travels to the right of the screen.
+                    if (npc.x >= 1800) {
                         npc.remove() // Remove the npc once it leaves...
                     }
                 }
@@ -243,7 +242,7 @@ window.addEventListener("load", () => {
     Game.UserInterfaceLoop.push({draw:(ctx) => {
         ctx.fillStyle = "black"
         ctx.font = "35px Verdana"
-        ctx.fillText("dt: "+ Game.frameTime.toFixed(1), 30, 40)
+        ctx.fillText(Math.round(1000/Game.frameTime)+"FPS", 30, 40)
     }})
 
     // Timer Display
@@ -260,20 +259,58 @@ window.addEventListener("load", () => {
         ctx.fillText("Score: "+ Game.world.score.toFixed(0), Game.settings.width - 590, 50)
     }})
 
+    // Set up the level select screen
+    setUpLevelSelect()
+
     // Listen for play button, and set it up so it says the correct text
     let playButton = document.getElementById("playButton")
-    playButton.textContent = `Play Level ${Game.world.status}`
+    playButton.textContent = `Level Select`
     playButton.addEventListener("mouseup", () => {
         console.log("Pressed Play");
         //Close the User Interface
         document.getElementById('MainMenu').style.display = "none"
-        levels[Game.world.status].initialise()
+        levelSelect()
     })
 })
+
+function clearBackgroundClickButton() {
+
+}
+
+function setUpLevelSelect() {
+    levels.forEach(level => {
+        const levelNumber = levels.indexOf(level)
+        console.log(levelNumber);
+        // Create a div to serve as the button
+        const div = document.createElement("div")
+        div.textContent = "Level " + (levelNumber+1)
+        div.className = "button"
+        // Add it to the level select
+        const menuToAddTo = document.getElementById("menu")
+        menuToAddTo.appendChild(div)
+        // Listen for an on click event to change the menu on right and background of button
+        div.addEventListener("mouseup", () => {
+            div.style.backgroundColor = "black"
+            // Change menu on right
+
+        })
+    })
+}
+
+function levelSelect() {
+
+        // Open up the level Select
+        document.getElementById("LevelSelect").style.display = "flex"
+        
+        // Selecet level 1 initially
+
+        // levels[Game.world.status].initialise()
+}
 
 // Get the last time to get the current Frame time
 let lastTime = 0
 function Update(delta) {
+    Game.currTime = delta
     //Get deltaTime for Consistent Animations
     const deltaTime = delta - lastTime
     lastTime = delta
@@ -282,7 +319,11 @@ function Update(delta) {
         requestAnimationFrame(Game.update);
         return
     }
-    // if (deltaTime > 33) console.warn("FPS Lower than 30...", Math.round(1000/deltaTime),"FPS")
+    if (deltaTime > 20) {
+        console.error("deltaTime Exceeded Maximum value exceeded ignoring tick", deltaTime)
+        requestAnimationFrame(Game.update);
+        return;
+    }
     //Ensure deltaTime is available globally
     Game.frameTime = deltaTime
 

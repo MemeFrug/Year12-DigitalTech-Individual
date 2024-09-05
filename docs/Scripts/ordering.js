@@ -18,6 +18,8 @@ const orderingUI = {
 
     npcInstance: undefined,
 
+    deltaTimeInitial: 0,
+
     // Player Selected Order list
     selectedOrderList: [],
 
@@ -34,6 +36,9 @@ const orderingUI = {
         orderTotal: document.getElementById("orderTotal")
     },
     newOrder: (count) => {
+        // Set the current time to account for how long the menu has been up
+        orderingUI.deltaTimeInitial = Game.currTime
+
         // Clear the order list html
         orderingUI.elements.orderList.innerHTML = ""
 
@@ -105,29 +110,30 @@ const orderingUI = {
         }
 
         // Check how many of the orders got correct.
-        console.log("=======================");
         let copyOfRequiredList = orderingUI.requiredOrderList
+        let lengthOfSelectedList = orderingUI.selectedOrderList.length
         let howManyCorrect = 0
         orderingUI.selectedOrderList.forEach(order => {
-            let 
             copyOfRequiredList.forEach(reqOrder => {
-                console.log(order, " == ", reqOrder);
                 if (order == reqOrder) {
-                    console.log(true);
-                    howManyCorrect++;
+                    // Iterate the variable describing how many correct choices
+                    howManyCorrect += 1;
                     // Remove the order in the copied list
                     copyOfRequiredList.splice(copyOfRequiredList.indexOf(reqOrder), 1)
                     
                 }
             });
         });
-        console.log(howManyCorrect);
-        console.log("=======================");
+        let incorrectSelections = lengthOfSelectedList - howManyCorrect
         
+        // How long the menu has been up in ms
+        const orderingUIOpenTime = Game.currTime-orderingUI.deltaTimeInitial
+        console.log(orderingUIOpenTime); 
 
-        //Add the total cost to the score, need to make it scale with how many got right
-        Game.world.score += eval(orderingUI.elements.orderTotal.textContent)
-
+        //Add the total cost to the score, scales with how many you got right
+        const scoreToAdd = howManyCorrect * 50 - incorrectSelections * 100
+        Game.world.score += (scoreToAdd * 1/orderingUIOpenTime) * 1000
+        console.log("added:", (scoreToAdd * 1/orderingUIOpenTime) * 1000);
         
         orderingUI.elements.orderTotal.textContent = "0" // Reset it back to zero dollerydoos
 
@@ -135,7 +141,7 @@ const orderingUI = {
         orderingUI.elements.selectedOrderList.innerHTML = ""
 
         // Add the order to the game
-        Game.orders.push(orderingUI.selectedOrderList)
+        Game.orders.push(orderingUI.requiredOrderList) // Push the required Order List just in case the user messes up to much
         orderingUI.selectedOrderList = [] // Clear it,
         console.log(Game.orders);
     }

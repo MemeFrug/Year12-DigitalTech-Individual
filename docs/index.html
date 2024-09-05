@@ -8,10 +8,19 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <h1>Resturant Trainer</h1>
     <div class="Interface">
         <canvas>You do not support Canvas.</canvas>
+        <div id="LevelSelect" class="ui" style="display: none; flex-direction: row;">
+            <div class="leftSide">
+                <div class="menu" id="menu">
+                </div>
+            </div>
+            <div class="rightSide">
+                <!-- Centered with all necessary level information, such as past score and possibly difficulty -->
+                 <div class="levelSelectButton"></div>
+            </div>
+        </div>
         <div id="MainMenu" class="ui">
             <div id="settingButton">Settings</div>
             <div id="playButton">Play</div>

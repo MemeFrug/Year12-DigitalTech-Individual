@@ -15,6 +15,8 @@ html, body {
     justify-content: center;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     user-select: none;
+    max-height: calc(8* 9vh);
+    max-width: calc(8* 16vh);
 }
 
 canvas {
@@ -92,7 +94,7 @@ canvas {
     display: flex;
     flex-direction: column;
     height: 100%;
-    width: auto;
+    width: 50%;
     justify-content: space-around;
 }
 
@@ -101,6 +103,30 @@ canvas {
 }
 
 .leftSide .menu .column div {
+    border: 2px solid black;
+    border-radius: 10px;
+    margin: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    width: 5.3vw;
+    height: 5.3vw;
+    font-size: 1.2vw;
+    transition: 0.5s;
+}
+
+.button:hover {
+    border: 2px dotted black;
+    background-color: rgba(0, 0, 0, 0.336);
+}
+
+.button:active {
+    background-color: black;
+    color: white;
+}
+
+.button {
     border: 2px solid black;
     border-radius: 10px;
     margin: 2px;
@@ -123,7 +149,7 @@ canvas {
     color: white;
 }
 
-.cashierTill .leftSide .menu {
+.menu {
     justify-content: center;
     display: flex;
     grid-auto-rows: auto;
@@ -235,3 +261,4 @@ canvas {
     border-radius: 30px;
     background-color: rgba(0, 0, 0, 0.205);
 }
+
