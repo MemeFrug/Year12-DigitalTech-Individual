@@ -117,7 +117,7 @@ const Game = {
             // NPC Script, its update function for arriving at the counter and leaving.
             npc.scripts.push(() => {
                 if (npc.x >= 990 + npc.w && !npc.leaving) {
-                    npc.vx = -npc.speed
+                    npc.vx = -npc.speed - .5
                 } else if (!npc.leaving) {
                     if (!npc.interactionSpawned) {
                         const interaction = new Interactor(0, 0, 100, 100)

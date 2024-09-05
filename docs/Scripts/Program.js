@@ -40,7 +40,7 @@ class Square extends Element {
         this.h = h
         this.vx = 0
         this.vy = 0
-        this.speed = .07
+        this.speed = .1
         this.movement = { // Constant Values Applied to velocity
             up: 0,
             down: 0,
@@ -369,12 +369,13 @@ const levels = [
             { y: 700 },
             { y: 900 },
         ],
-        description: "The first level of the restuarant trainer, customers spawn at most twice, and you must complete as many orders as you can in 60 seconds",
+        description: "The first level of the restuarant trainer, customers spawn at most twice, and you must complete as many orders as you can in 60 seconds, The score needed to pass is 30 points",
         spawnTimer: 0, // Timer for NPC spawning.
         spawnSpeed: 1000, // Spawn Speed of NPCs
         maxNPCCount: 2,
         maxItemList: 2, // How many items
         timeLimit: 60, // Time limit for the level in seconds
+        scoreNeeded: 30,
         npcList: [],
 
         initialise: () => {

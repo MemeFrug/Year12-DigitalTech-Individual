@@ -11,7 +11,7 @@
     <h1>Resturant Trainer</h1>
     <div class="Interface">
         <canvas>You do not support Canvas.</canvas>
-        <div id="animator" class="ui" style="display: none;"></div> <!-- Used for animation after the level select -->
+        <div id="animator" class="ui" style="display: none;"><span>Loading...</span></div> <!-- Used for animation after the level select -->
         <div id="LevelSelect" class="ui">
             <div class="leftSide" id="levelSelectLeft">
                 <div class="menu" id="menu">
@@ -65,14 +65,14 @@
                     <div class="rightSide">
                         <!-- List of things you have selected -->
                         <div class="productSelection" style="overflow-y: auto;">
-                            <ul id="selectedOrderList" style="padding-inline-start: 20px; font-size: 1.5vw;"></ul>
+                            <ul id="selectedOrderList" style="padding-inline-start: 30px;"></ul>
                         </div>
 
                         <!-- Change your menus -->
                          <div class="menuSelector">
-                            <div id="foodButton">Food</div>
-                            <div id="drinksButton">Drinks</div>
-                            <div id="otherButton">Other</div>
+                            <div id="foodButton"><span>Food</span></div>
+                            <div id="drinksButton"><span>Drinks</span></div>
+                            <div id="otherButton"><span>Other</span></div>
                          </div>
                     </div>
                 </div>

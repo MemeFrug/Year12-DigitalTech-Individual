@@ -127,13 +127,18 @@ const orderingUI = {
         let incorrectSelections = lengthOfSelectedList - howManyCorrect
         
         // How long the menu has been up in ms
-        const orderingUIOpenTime = Game.currTime-orderingUI.deltaTimeInitial
-        console.log(orderingUIOpenTime); 
+        let orderingUIOpenTime = Game.currTime-orderingUI.deltaTimeInitial
+        orderingUIOpenTime = orderingUIOpenTime/1000 // Convert it into seconds
 
         //Add the total cost to the score, scales with how many you got right
-        const scoreToAdd = howManyCorrect * 50 - incorrectSelections * 100
-        Game.world.score += (scoreToAdd * 1/orderingUIOpenTime) * 1000
-        console.log("added:", (scoreToAdd * 1/orderingUIOpenTime) * 1000);
+        const scoreToAdd = howManyCorrect - incorrectSelections*2
+        if (scoreToAdd <= 0) {
+            Game.world.score += (scoreToAdd * 10) - 15
+            console.log("added:", (scoreToAdd * 10) - 15);    
+        } else if (scoreToAdd > 0) {
+            Game.world.score += ((scoreToAdd*3) * 1/orderingUIOpenTime) * 10
+            console.log("added:", ((scoreToAdd*3) * 1/orderingUIOpenTime) * 10);    
+        }
         
         orderingUI.elements.orderTotal.textContent = "0" // Reset it back to zero dollerydoos
 
