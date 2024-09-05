@@ -366,8 +366,6 @@ const pickableItems = {
     }
 }
 
-
-
 const levels = [
     {   //level 0
         data: {
@@ -378,13 +376,14 @@ const levels = [
             { y: 700 },
             { y: 900 },
         ],
-        description: "The first level of the restuarant trainer, customers spawn at most twice, and you must complete as many orders as you can in 10 seconds, The score needed to pass is 20 points",
+        description: `The first level of the restuarant trainer, customers spawn at most 2 times, 
+        and you must complete as many orders as you can in 50 seconds, The score needed to pass is 40 points`,
         spawnTimer: 0, // Timer for NPC spawning.
         spawnSpeed: 2000, // Spawn Speed of NPCs
         maxNPCCount: 2,
         maxItemList: 2, // How many items
-        timeLimit: 10, // Time limit for the level in seconds
-        scoreNeeded: 20,
+        timeLimit: 50, // Time limit for the level in seconds
+        scoreNeeded: 40,
         savedScore: 0,
         idleScoreTakeRate: 0.0005,
         npcList: [],
@@ -436,9 +435,139 @@ const levels = [
         }
     },
     {   //level 1
+        data: {
+            timer1: 0,
+        },
+        spawnerLines: [
+            { y: 500 },
+            { y: 700 },
+            { y: 900 },
+        ],
+        description: `Customers spawn at most 3 times, 
+        and you must complete as many orders as you can in 1 minute, 
+        The score needed to pass is 40 points`,
+        spawnTimer: 2500, // Timer for NPC spawning. Initial
+        spawnSpeed: 4500, // Spawn Speed of NPCs
+        maxNPCCount: 3,
+        maxItemList: 3, // How many items
+        timeLimit: 60, // Time limit for the level in seconds
+        scoreNeeded: 40,
+        savedScore: 0,
+        idleScoreTakeRate: 0.0007,
+        npcList: [],
 
+        initialise: () => {
+            // Start Listening to keyboard events THIS MIGHT BREAK THINGS
+            Game.inputType.style = Game.settings.inputStyle
+            Game.inputType.init()
+
+            Game.world.time = levels[0].timeLimit
+            Game.world.timerEnabled = true
+            Game.world.setup() // Setup the player
+            console.log("Done Setup, Game loop Starting");
+            Game.update() // Start the update loop
+        },
+
+        endEvent: () => {
+            // Check how many npcs are active and deduct 5 points per npc
+            const totalNPC = levels[0].npcList.length
+            Game.score
+        },
+
+        spawner: (dt) => {
+            let level = levels[0]
+
+            if (Game.paused) return;
+            if (Game.world.time <= 0) {
+                spawnTimer = 0;
+                return;
+            }
+
+            if (level.maxNPCCount <= level.npcList.length) return;
+
+            level.spawnTimer += Math.random() * dt
+            if (level.spawnTimer >= level.spawnSpeed) {
+                console.log("spawning");
+                level.spawnTimer = 0
+
+                //Spawn the npc
+                Game.world.spawnNPC()
+            }
+        },
+
+        update: (dt) => {
+            levels[0].spawner(dt)
+
+            // Insentivise Taking Orders by taking score away
+            Game.world.score -= levels[0].idleScoreTakeRate * dt
+        }
     },
     {   //level 2
+        data: {
+            timer1: 0,
+        },
+        spawnerLines: [
+            { y: 500 },
+            { y: 700 },
+            { y: 900 },
+        ],
+        description: `Customers spawn at most 3 times, 
+        and you must complete as many orders as you can in 80 seconds, 
+        The score needed to pass is 110 points`,
+        spawnTimer: 2500, // Timer for NPC spawning. Initial
+        spawnSpeed: 4500, // Spawn Speed of NPCs
+        maxNPCCount: 3,
+        maxItemList: 3, // How many items
+        timeLimit: 80, // Time limit for the level in seconds
+        scoreNeeded: 110,
+        savedScore: 0,
+        idleScoreTakeRate: 0.0007,
+        npcList: [],
 
+        initialise: () => {
+            // Start Listening to keyboard events THIS MIGHT BREAK THINGS
+            Game.inputType.style = Game.settings.inputStyle
+            Game.inputType.init()
+
+            Game.world.time = levels[0].timeLimit
+            Game.world.timerEnabled = true
+            Game.world.setup() // Setup the player
+            console.log("Done Setup, Game loop Starting");
+            Game.update() // Start the update loop
+        },
+
+        endEvent: () => {
+            // Check how many npcs are active and deduct 5 points per npc
+            const totalNPC = levels[0].npcList.length
+            Game.score
+        },
+
+        spawner: (dt) => {
+            let level = levels[0]
+
+            if (Game.paused) return;
+            if (Game.world.time <= 0) {
+                spawnTimer = 0;
+                return;
+            }
+
+            if (level.maxNPCCount <= level.npcList.length) return;
+
+            level.spawnTimer += Math.random() * dt
+            if (level.spawnTimer >= level.spawnSpeed) {
+                console.log("spawning");
+                level.spawnTimer = 0
+
+                //Spawn the npc
+                Game.world.spawnNPC()
+            }
+        },
+
+        update: (dt) => {
+            levels[0].spawner(dt)
+
+            // Insentivise Taking Orders by taking score away
+            Game.world.score -= levels[0].idleScoreTakeRate * dt
+        }
     },
 ]

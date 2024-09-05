@@ -124,7 +124,7 @@ const Game = {
                             //When interacting with an NPC, open the cashier screen up
                             Game.inputType.enabled = false // Prevent moving the character or other key presses
                             Game.interface.enableUserInterface()
-                            orderingUI.newOrder(Game.world.status * 2 + 2) // Create a brand new order
+                            orderingUI.newOrder(getRandomInt(1, levels[Game.world.status].maxNPCCount)) // Create a brand new order with a random count
                             orderingUI.npcInstance = npc
                         })
 
@@ -433,7 +433,7 @@ function setUpLevelSelect() {
             // Change menu on right
             levelName.textContent = "Level " + (levelNumber+1) // Change the name of the level
             levelInfoScore.textContent = level.savedScore // Gathered From Local Storage
-            levelInfoTimeLimit.textContent =  (level.timeLimit/60).toFixed(2) // Convert the time limit to seconds
+            levelInfoTimeLimit.textContent =  level.timeLimit // Convert the time limit to seconds
             levelDescription.textContent = level.description
             if (level.scoreNeeded >= level.savedScore) failedLevel.textContent = "Incomplete Level"
             else failedLevel.textContent = "Complete Level"
