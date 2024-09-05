@@ -88,14 +88,29 @@ canvas {
     display: flex;
     height: 100%;
     width: 60%;
+    transition: 2s ease-out;
 }
 
+#LevelSelect {
+    display: none; 
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#animator {
+    transition: 2s ease-in-out;
+    background-color: black;
+    width: 100%;
+    right: 0;
+}
 .rightSide {
     display: flex;
     flex-direction: column;
     height: 100%;
-    width: 50%;
+    /* width: 50%; */
     justify-content: space-around;
+    transition: 1s;
+    right: 0;
 }
 
 .leftSide .menu .column {
@@ -114,6 +129,34 @@ canvas {
     height: 5.3vw;
     font-size: 1.2vw;
     transition: 0.5s;
+}
+
+#levelDescription {
+    text-align: justify;
+    margin-left: 90px;
+    margin-right: 90px;
+}
+
+#levelInfo {
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+}
+
+#levelTitle {
+    font-size: 4vw;
+}
+
+.levelDescription .button {
+    height: 5%;
+}
+
+.levelDescription {
+    align-items: center;
+    justify-content: center;
+    transition: 1s;
+    width: 60%;
+    overflow: auto;
+    border-left: 3px solid black;
 }
 
 .button:hover {

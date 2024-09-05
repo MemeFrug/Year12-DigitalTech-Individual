@@ -6,7 +6,7 @@ const Game = {
     paused: false,
     applyTransformations: () => {
         Game.ctx.translate(Game.camera.x, Game.camera.y)
-        Game.ctx.scale(Game.camera.scale,Game.camera.scale)
+        Game.ctx.scale(Game.camera.scale, Game.camera.scale)
     },
     settings: {
         width: 1920, // Could change this to localStorage value so we can change
@@ -68,10 +68,10 @@ const Game = {
             //Apply transforms
             const matrix = Game.ctx.getTransform()
             const imatrix = matrix.invertSelf()
-            
+
             // Set the global mouse position 
-            Game.mouse = { 
-                x: relMousePosition.x * imatrix.a + relMousePosition.y * imatrix.c + imatrix.e, 
+            Game.mouse = {
+                x: relMousePosition.x * imatrix.a + relMousePosition.y * imatrix.c + imatrix.e,
                 y: relMousePosition.y * imatrix.b + relMousePosition.y * imatrix.d + imatrix.f
             }
         }
@@ -82,14 +82,14 @@ const Game = {
         ctx.canvas.style.width = "calc(100% - 2px)" // Make the canvas's width entire width of Container taking into account the border style
     },
     inputType: new Input(),
-    player: new Square(10,50,100,100),
+    player: new Square(10, 50, 100, 100),
     orders: [
         //Each of the orders
     ],
     world: {
         score: 0,
         status: 0,
-        time: 60,
+        time: undefined,
         timerLoops: [],
         timerEnabled: true,
         interactors: [
@@ -97,20 +97,20 @@ const Game = {
         ],
         objects: [
             // Walls to the restuarant
-            new Square(970,10, 100,1060),
-            new Square(-90,0, 100,1100),
-            new Square(0,-90, 1070,100),
-            new Square(0,1070, 1070,100),
+            new Square(970, 10, 100, 1060),
+            new Square(-90, 0, 100, 1100),
+            new Square(0, -90, 1070, 100),
+            new Square(0, 1070, 1070, 100),
         ],
         spawnNPC: () => {
             // Pick from three possible lines
             const lines = levels[Game.world.status].spawnerLines
-            let pickedLine = lines[getRandomInt(0, lines.length-1)]
-            
+            let pickedLine = lines[getRandomInt(0, lines.length - 1)]
+
             // Get a random list of foods/drinks
             // pickableItems.returnRandomList(levels[Game.world.status].maxItemList)
 
-            const npc = new Square(0, pickedLine.y,100,100)
+            const npc = new Square(0, pickedLine.y, 100, 100)
             npc.x = Game.settings.width - npc.w
             npc.leaving = false
 
@@ -119,8 +119,8 @@ const Game = {
                 if (npc.x >= 990 + npc.w && !npc.leaving) {
                     npc.vx = -npc.speed
                 } else if (!npc.leaving) {
-                    if (!npc.interactionSpawned){
-                        const interaction = new Interactor(0,0,100,100)
+                    if (!npc.interactionSpawned) {
+                        const interaction = new Interactor(0, 0, 100, 100)
                         npc.interactionSpawned = true
                         npc.tiedInteractor = interaction
 
@@ -128,7 +128,7 @@ const Game = {
                             //When interacting with an NPC, open the cashier screen up
                             Game.inputType.enabled = false // Prevent moving the character or other key presses
                             Game.interface.enableUserInterface()
-                            orderingUI.newOrder(Game.world.status*2+2) // Create a brand new order
+                            orderingUI.newOrder(Game.world.status * 2 + 2) // Create a brand new order
                             orderingUI.npcInstance = npc
                             Game.camera.draw = false // Prevent drawing under the UI 
                         })
@@ -145,9 +145,9 @@ const Game = {
                     }
                 }
             })
-            
+
             npc.draw = (ctx) => {
-                ctx.fillRect(npc.x,npc.y, npc.w, npc.h)
+                ctx.fillRect(npc.x, npc.y, npc.w, npc.h)
             }
 
             npc.isPlayer = true // Allows it to collide with things...
@@ -178,7 +178,7 @@ let ctx = document.querySelector("canvas").getContext("2d"); // Let the website 
 // Listen for document load, for any images and files, then set up the canvas
 window.addEventListener("load", () => {
     console.log("Document Loaded, setting up canvas."); // Inform Devs of Situation
-    
+
     if (!Game.interface.opened) Game.interface.userInterfaceElement.style.display = "none"
 
     // Start the canvas resize
@@ -188,7 +188,7 @@ window.addEventListener("load", () => {
 
     //Add mouse update loop
     Game.interface.element.addEventListener("mousemove", Game.mouse.update)
-    
+
     // Debug Draw mouse cursor
     // Game.drawLoop.push({draw: (ctx) => {
     //     ctx.fillStyle = "black"
@@ -227,37 +227,43 @@ window.addEventListener("load", () => {
     })
 
     // Set event listeners for when pressing inputs.
-    Game.inputType.call.up.push(() => {Game.player.movement.up = Game.player.speed})
-    Game.inputType.call.down.push(() => {Game.player.movement.down = Game.player.speed})
-    Game.inputType.call.left.push(() => {Game.player.movement.left = Game.player.speed})
-    Game.inputType.call.right.push(() => {Game.player.movement.right = Game.player.speed})
+    Game.inputType.call.up.push(() => { Game.player.movement.up = Game.player.speed })
+    Game.inputType.call.down.push(() => { Game.player.movement.down = Game.player.speed })
+    Game.inputType.call.left.push(() => { Game.player.movement.left = Game.player.speed })
+    Game.inputType.call.right.push(() => { Game.player.movement.right = Game.player.speed })
 
     // Set event listeners for when letting go from inputs
-    Game.inputType.upcall.up.push(() => {Game.player.movement.up = 0})
-    Game.inputType.upcall.down.push(() => {Game.player.movement.down = 0})
-    Game.inputType.upcall.left.push(() => {Game.player.movement.left = 0})
-    Game.inputType.upcall.right.push(() => {Game.player.movement.right = 0})
-    
+    Game.inputType.upcall.up.push(() => { Game.player.movement.up = 0 })
+    Game.inputType.upcall.down.push(() => { Game.player.movement.down = 0 })
+    Game.inputType.upcall.left.push(() => { Game.player.movement.left = 0 })
+    Game.inputType.upcall.right.push(() => { Game.player.movement.right = 0 })
+
     // Debug Frame Time display
-    Game.UserInterfaceLoop.push({draw:(ctx) => {
-        ctx.fillStyle = "black"
-        ctx.font = "35px Verdana"
-        ctx.fillText(Math.round(1000/Game.frameTime)+"FPS", 30, 40)
-    }})
+    Game.UserInterfaceLoop.push({
+        draw: (ctx) => {
+            ctx.fillStyle = "black"
+            ctx.font = "35px Verdana"
+            ctx.fillText(Math.round(1000 / Game.frameTime) + "FPS", 30, 40)
+        }
+    })
 
     // Timer Display
-    Game.UserInterfaceLoop.push({draw:(ctx) => {
-        ctx.fillStyle = "black"
-        ctx.font = "35px Verdana"
-        ctx.fillText("Timer: "+ Game.world.time.toFixed(0)+" | ", Game.settings.width - 800, 50)
-    }})
+    Game.UserInterfaceLoop.push({
+        draw: (ctx) => {
+            ctx.fillStyle = "black"
+            ctx.font = "35px Verdana"
+            ctx.fillText("Timer: " + Game.world.time.toFixed(0) + " | ", Game.settings.width - 800, 50)
+        }
+    })
 
     // Score Display
-    Game.UserInterfaceLoop.push({draw:(ctx) => {
-        ctx.fillStyle = "black"
-        ctx.font = "35px Verdana"
-        ctx.fillText("Score: "+ Game.world.score.toFixed(0), Game.settings.width - 590, 50)
-    }})
+    Game.UserInterfaceLoop.push({
+        draw: (ctx) => {
+            ctx.fillStyle = "black"
+            ctx.font = "35px Verdana"
+            ctx.fillText("Score: " + Game.world.score.toFixed(0), Game.settings.width - 590, 50)
+        }
+    })
 
     // Set up the level select screen
     setUpLevelSelect()
@@ -274,37 +280,98 @@ window.addEventListener("load", () => {
 })
 
 function clearBackgroundClickButton() {
+    const menu = document.getElementById("menu")
+    Array.from(menu.children).forEach(level => {
+        level.style.backgroundColor = "rgba(0,0,0,0)"
+        level.value = "notselected"
+    })
+}
 
+function startLevel(selectedLevel) {
+    console.log(selectedLevel);
+    //Change the size of the screen for an animation
+    const levelSelectLeft = document.getElementById("levelSelectLeft");
+    const levelSelectRight = document.getElementById("levelSelectRight");
+
+    levelSelectLeft.style.width = "0%"
+    levelSelectRight.style.width = "100%"
+
+    // Fade the screen
+    levelSelectRight.style.backgroundColor = "rgb(0,0,0)"
+
+
+    // Change world settings
+    Game.world.time=levels[selectedLevel].timeLimit
+    setTimeout(() => {
+        //Open up level animation
+        document.getElementById("animator").style.display = "flex"
+    },1800) // initialse in 1.8 second
+
+    setTimeout(() => {
+        // close the level select
+        document.getElementById("LevelSelect").style.display = "none"
+        //Open up level animation
+        document.getElementById("animator").style.display = "flex"
+        // Initialise the level
+        levels[Game.world.status].initialise()
+        //openning up animation
+        document.getElementById("animator").style.width = "0%"
+    },2000) // initialse in 2 second
 }
 
 function setUpLevelSelect() {
+    //Level descriptiors
+    const levelName = document.getElementById("levelTitle")
+    const levelInfoScore = document.getElementById("levelScore")
+    const levelInfoTimeLimit = document.getElementById("timeLimit")
+    const levelDescription = document.getElementById("levelDescription")
+    //Listen for the play button
+    document.getElementById("playLevelButton").addEventListener("mouseup", () => {
+        startLevel(Game.world.status)
+    })
     levels.forEach(level => {
         const levelNumber = levels.indexOf(level)
         console.log(levelNumber);
         // Create a div to serve as the button
         const div = document.createElement("div")
-        div.textContent = "Level " + (levelNumber+1)
+        div.textContent = "Level " + (levelNumber + 1)
         div.className = "button"
         // Add it to the level select
         const menuToAddTo = document.getElementById("menu")
         menuToAddTo.appendChild(div)
+        div.value = "notselected"
         // Listen for an on click event to change the menu on right and background of button
         div.addEventListener("mouseup", () => {
-            div.style.backgroundColor = "black"
-            // Change menu on right
+            // Open up the level descriptor
+            document.getElementById("levelSelectRight").style.width = "60%"
+            // Clear all the other button's backgrounds
+            clearBackgroundClickButton()
+            if (div.value != "selected") { // Check if the button is already selected
+                div.style.backgroundColor = "rgba(0,0,0,0.2)" // Change the background to be semi-dark
+                div.value = "selected"
+            } else { // Else remove the background of the button
+                div.value = "notselected"
+                div.style.backgroundColor = "rgba(0,0,0,0)"
+            }
 
+            // Change menu on right
+            levelName.textContent = "Level " + (levelNumber+1) // Change the name of the level
+            levelInfoScore.textContent = "0" // THIS NEEDS TO CHANGE TO ADD FROM LOCAL STORAGE
+            levelInfoTimeLimit.textContent =  level.timeLimit //
+            levelDescription.textContent = level.description
+
+            // Change game states
+            Game.world.status = levelNumber
         })
     })
 }
 
+// This function is used for the main menu when opening up the level screen for opening up the UI element
 function levelSelect() {
-
-        // Open up the level Select
-        document.getElementById("LevelSelect").style.display = "flex"
-        
-        // Selecet level 1 initially
-
-        // levels[Game.world.status].initialise()
+    // Close the level select descriptor
+    document.getElementById("levelSelectRight").style.width = "0%"
+    // Open up the level Select
+    document.getElementById("LevelSelect").style.display = "flex"
 }
 
 // Get the last time to get the current Frame time
@@ -330,7 +397,7 @@ function Update(delta) {
     // Reset the transformation so that it doesnt constantly be applied
     Game.ctx.resetTransform()
     //Clear the rect every
-    Game.ctx.clearRect(0,0,Game.settings.width, Game.settings.height)
+    Game.ctx.clearRect(0, 0, Game.settings.width, Game.settings.height)
     // Run the user interface loop before transformations applied.
     Game.UserInterfaceLoop.forEach(element => {
         if (element.update) {
@@ -356,7 +423,7 @@ function Update(delta) {
     //Update the Level
     if (Game.world.timerEnabled && Game.world.time > 0) {
         Game.world.timerEnabled = true // This might break the loop
-        Game.world.time-= deltaTime/1000
+        Game.world.time -= deltaTime / 1000
     } else if (Game.world.timerEnabled) {
         Game.world.timerEnabled = false
     }

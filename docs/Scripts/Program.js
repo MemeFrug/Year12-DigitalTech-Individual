@@ -369,11 +369,12 @@ const levels = [
             { y: 700 },
             { y: 900 },
         ],
+        description: "The first level of the restuarant trainer, customers spawn at most twice, and you must complete as many orders as you can in 60 seconds",
         spawnTimer: 0, // Timer for NPC spawning.
         spawnSpeed: 1000, // Spawn Speed of NPCs
         maxNPCCount: 2,
         maxItemList: 2, // How many items
-
+        timeLimit: 60, // Time limit for the level in seconds
         npcList: [],
 
         initialise: () => {
