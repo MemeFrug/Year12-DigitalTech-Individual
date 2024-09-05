@@ -188,6 +188,7 @@ class Interactor extends Element {
         const drawLoop = Game.drawLoop.indexOf(this)
         const updateLoop = Game.updateLoop.indexOf(this)
         const worldLoop = Game.world.objects.indexOf(this)
+        const interactorLoop = Game.world.interactors.indexOf(this)
         if (drawLoop != -1) {
             Game.drawLoop.splice(drawLoop, 1)
         }
@@ -196,6 +197,9 @@ class Interactor extends Element {
         }
         if (worldLoop != -1) {
             Game.world.objects.splice(worldLoop, 1)
+        }
+        if (interactorLoop != -1) {
+            Game.world.interactors.splice(interactorLoop, 1)
         }
     }
 

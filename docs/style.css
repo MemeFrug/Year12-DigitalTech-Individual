@@ -111,6 +111,7 @@ canvas {
     width: 100%;
     right: 0;
 }
+
 .rightSide {
     display: flex;
     flex-direction: column;
