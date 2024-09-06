@@ -153,8 +153,8 @@ canvas {
 
 #levelDescription {
     text-align: justify;
-    margin-left: 90px;
-    margin-right: 90px;
+    margin-left: 2vw;
+    margin-right: 2vw;
 }
 
 #levelInfo {

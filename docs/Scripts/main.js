@@ -167,7 +167,7 @@ const Game = {
                 draw: (ctx) => {
                     ctx.fillStyle = "black"
                     ctx.font = "35px Verdana"
-                    ctx.fillText(Math.round(1000 / Game.frameTime) + "FPS", 30, 40)
+                    ctx.fillText(Math.round(1000 / Game.frameTime) + "FPS", 60, 40)
                 }
             })
         
@@ -471,7 +471,7 @@ function Update(delta) {
         requestAnimationFrame(Game.update);
         return
     }
-    if (deltaTime > 20) {
+    if (deltaTime > 34) {
         console.error("deltaTime Exceeded Maximum value exceeded ignoring tick", deltaTime)
         requestAnimationFrame(Game.update);
         return;
