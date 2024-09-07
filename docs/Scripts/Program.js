@@ -267,7 +267,7 @@ class Input {
     init() {
         window.addEventListener("keydown", (code) => {
             if (!this.enabled) return;
-            switch (code.key) {
+            switch (code.key.toLowerCase()) {// Making it to lower case just in case user has caps lock on
                 case "w":
                     this.call.up.forEach(func => {
                         func()
@@ -294,7 +294,7 @@ class Input {
         })
         window.addEventListener("keyup", (code) => {
             if (!this.enabled) return;
-            switch (code.key) {
+            switch (code.key.toLowerCase()) { // Making it to lower case just in case user has caps lock on
                 case "w":
                     this.upcall.up.forEach(func => {
                         func()
@@ -400,12 +400,6 @@ const levels = [
             Game.update() // Start the update loop
         },
 
-        endEvent: () => {
-            // Check how many npcs are active and deduct 5 points per npc
-            const totalNPC = levels[0].npcList.length
-            Game.score
-        },
-
         spawner: (dt) => {
             let level = levels[0]
 
@@ -468,12 +462,6 @@ const levels = [
             Game.update() // Start the update loop
         },
 
-        endEvent: () => {
-            // Check how many npcs are active and deduct 5 points per npc
-            const totalNPC = levels[0].npcList.length
-            Game.score
-        },
-
         spawner: (dt) => {
             let level = levels[0]
 
@@ -534,12 +522,6 @@ const levels = [
             Game.world.setup() // Setup the player
             console.log("Done Setup, Game loop Starting");
             Game.update() // Start the update loop
-        },
-
-        endEvent: () => {
-            // Check how many npcs are active and deduct 5 points per npc
-            const totalNPC = levels[0].npcList.length
-            Game.score
         },
 
         spawner: (dt) => {

@@ -50,6 +50,7 @@ const Game = {
     mouse: {
         x: 0,
         y: 0,
+        down: false,
         update: (Event) => {
             //Get mouse position relative to all scaling
             // Need to improve this when adding transformation matrixes
@@ -61,14 +62,12 @@ const Game = {
                 y: canvas.height / rect.height
             }
 
-            // With the scale of the imagei n the canvas, get the relative mouse position
-            const relMousePosition = {
-                x: (Event.clientX - rect.left) * scale.x,
-                y: (Event.clientY - rect.top) * scale.y
-            }
+            // Initialise the variable
+            let relMousePosition = undefined;
 
+            relMousePosition = { x: (Event.clientX - rect.left) * scale.x, y: (Event.clientY - rect.top) * scale.y };
             //Apply transforms
-            const matrix = Game.ctx.getTransform()
+            const matrix = Game.ctx.getTransform();
             const imatrix = matrix.invertSelf()
 
             // Set the global mouse position 
@@ -76,6 +75,8 @@ const Game = {
                 x: relMousePosition.x * imatrix.a + relMousePosition.y * imatrix.c + imatrix.e,
                 y: relMousePosition.y * imatrix.b + relMousePosition.y * imatrix.d + imatrix.f
             }
+
+
         }
     },
     canvasResize: () => {
@@ -273,6 +274,64 @@ const Game = {
     }
 }
 
+const mobileMouse = {
+    pos: {
+        x: 0,
+        y: 0
+    },
+    tapedTwice: false,
+}
+
+function InitialiseMobileEventsOn(el) { // Puts the events on the element
+    function mobilesetpos(evt) {
+        const touches = evt.changedTouches[0];
+        // Get the position on canvas
+        let canvas = Game.ctx.canvas
+        const rect = canvas.getBoundingClientRect() // abs. size of element
+        const scale = {
+            x: canvas.width / rect.width,
+            y: canvas.height / rect.height
+        }
+        let relMousePosition = {
+            x: (touches.clientX - rect.left) * scale.x,
+            y: (touches.clientY - rect.top) * scale.y
+        }
+        //Apply transforms
+        const matrix = Game.ctx.getTransform()
+        const imatrix = matrix.invertSelf()
+        mobileMouse.pos.x = relMousePosition.x * imatrix.a + relMousePosition.y * imatrix.c + imatrix.e
+        mobileMouse.pos.y = relMousePosition.y * imatrix.b + relMousePosition.y * imatrix.d + imatrix.f
+
+    }
+    function tapHandler(evt) {
+        evt.preventDefault()
+        if(!mobileMouse.tapedTwice) {
+            mobileMouse.tapedTwice = true;
+            // Add a delay for double tap function
+            setTimeout( function() { mobileMouse.tapedTwice = false; }, 300 );
+            // Set the new position of the finger
+            mobilesetpos(evt)
+            return false;
+        }
+        // Prevent default actions like zooming when double taping
+        evt.preventDefault();
+        Game.world.interactors.forEach(interactors => {
+            console.log("Interacting");
+            interactors.interact(Game.player)
+        });
+    }
+    el.addEventListener("touchstart", tapHandler); 
+    el.addEventListener("touchmove", (evt) => {
+        evt.preventDefault()
+        mobilesetpos(evt)
+    });
+}
+
+// reterns specific elements
+function copyTouch({ identifier, pageX, pageY }) {
+    return { identifier, pageX, pageY };
+}
+
 // Setup the canvas
 const canvasElement = document.querySelector("canvas") // gets the first canvas in the html
 let ctx = document.querySelector("canvas").getContext("2d"); // Let the website know to create memory for this variable
@@ -291,11 +350,15 @@ window.addEventListener("load", () => {
     //Add mouse update loop
     Game.interface.element.addEventListener("mousemove", Game.mouse.update)
 
-    // Debug Draw mouse cursor
-    // Game.drawLoop.push({draw: (ctx) => {
-    //     ctx.fillStyle = "black"
-    //     ctx.fillRect(Game.mouse.x-5, Game.mouse.y-5, 10, 10)
-    // }})
+
+    Game.interface.element.addEventListener("touchstart", (e) => {
+        Game.mouse.down = true
+        console.log("Mouse Down");
+    })
+    Game.interface.element.addEventListener("touchend", (e) => {
+        Game.mouse.down = false;
+        console.log("Mouse Up");
+    })
 
     Game.interface.element.addEventListener("mouseup", (e) => {
         Game.clickListener.forEach(element => {
@@ -342,6 +405,9 @@ window.addEventListener("load", () => {
 
     // Set up the level select screen
     setUpLevelSelect()
+
+    //Set up Mobile Touch Events
+    InitialiseMobileEventsOn(Game.ctx.canvas)
 
     // Listen for play button, and set it up so it says the correct text
     let playButton = document.getElementById("playButton")
@@ -476,6 +542,7 @@ function Update(delta) {
         requestAnimationFrame(Game.update);
         return;
     }
+
     //Ensure deltaTime is available globally
     Game.frameTime = deltaTime
 
@@ -526,6 +593,17 @@ function Update(delta) {
                 element.draw(Game.ctx)
             }
         });
+    }
+    ctx.fillRect(mobileMouse.pos.x, mobileMouse.pos.y, 5,5)
+
+    // If mouse is down
+    if (Game.mouse.down) {
+        // Make player go towards mouse
+        const mousexposrel = (mobileMouse.pos.x - Game.player.x)/70
+        const mouseyposrel = (mobileMouse.pos.y - Game.player.y)/70
+        Game.player.x += mousexposrel
+        Game.player.y += mouseyposrel
+        console.log(mousexposrel, mouseyposrel);
     }
     requestAnimationFrame(Game.update)
 }
