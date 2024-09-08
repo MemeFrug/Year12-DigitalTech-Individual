@@ -385,7 +385,7 @@ const levels = [
         timeLimit: 50, // Time limit for the level in seconds
         scoreNeeded: 40,
         savedScore: 0,
-        idleScoreTakeRate: 0.0005,
+        idleScoreTakeRate: 0.00005,
         npcList: [],
 
         initialise: () => {

@@ -20,6 +20,12 @@ const Game = {
         draw: true,
     },
     interface: {
+        changePageTitle: (value) => {
+            document.getElementById("pageTitle").innerHTML = value
+        },
+        changePageDescription: (value) => {
+            document.getElementById("tutorialText").innerHTML = value
+        },
         opened: false,
         element: document.getElementsByClassName("Interface")[0],
         userInterfaceElement: document.getElementById("cashierScreen"),
@@ -195,11 +201,12 @@ const Game = {
                 draw: (ctx) => {
                     ctx.fillStyle = "black"
                     ctx.font = "35px Verdana"
+                    ctx.fillText("Movement: (Hold Finger Down)" , Game.settings.width - 590, Game.settings.height- 243)
                     ctx.fillText("W - Up" , Game.settings.width - 210, Game.settings.height- 200)
                     ctx.fillText("A - Left" , Game.settings.width - 210, Game.settings.height- 160)
                     ctx.fillText("S - Down" , Game.settings.width - 210, Game.settings.height- 120)
                     ctx.fillText("D - Right" , Game.settings.width - 210, Game.settings.height- 80)
-                    ctx.fillText("Interact: E" , Game.settings.width - 210, Game.settings.height- 30)
+                    ctx.fillText("Interact: E (Double Tap Finger)" , Game.settings.width - 470, Game.settings.height- 30)
                 }
             })
             
@@ -432,6 +439,11 @@ window.addEventListener("load", () => {
         // Hide the initiall Submit button, but show the continue button
         document.getElementById("submitButton").style.display = "none"
         document.getElementById("continueButtonTut").style.display = "flex"
+        Game.interface.changePageTitle("Cashier Screen")
+        Game.interface.changePageDescription(`Here you can take a look around the order taking user interface
+             and learn the different positions of each item on the menu. There are three categories, Food, Drinks and Other. Pressing those buttons below will change the items displayed. Make sure you select the right items as you cannot remove them once selected. 
+             Your required items will appear at the top left. You will get a lower score for the longer you take.
+            `)
     })
     // Add an mouse up event for when pressing the continue button in the order taking screen
     document.getElementById("continueButtonTut").addEventListener("mouseup", () => {
@@ -442,6 +454,7 @@ window.addEventListener("load", () => {
         document.getElementById('MainMenu').style.display = "flex"
         //Show the user interface
         Game.interface.userInterfaceElement.style.display = "none"
+        Game.interface.changePageTitle("Order Taking Trainer")
     })
 
     //Back button functionality for the level select screen
@@ -450,6 +463,7 @@ window.addEventListener("load", () => {
         document.getElementById('MainMenu').style.display = "flex"
         // Close up the level Select
         document.getElementById("LevelSelect").style.display = "none"
+        Game.interface.changePageTitle("Order Taking Trainer")
     })
 
     // Listen for play button, and set it up so it says the correct text
@@ -459,6 +473,7 @@ window.addEventListener("load", () => {
         //Close the User Interface
         document.getElementById('MainMenu').style.display = "none"
         levelSelect()
+        Game.interface.changePageTitle("Level Select")
     })
 })
 
@@ -512,6 +527,7 @@ function setUpLevelSelect() {
     //Listen for the play button
     document.getElementById("playLevelButton").addEventListener("mouseup", () => {
         startLevel(Game.world.status)
+        Game.interface.changePageTitle("Level " + Game.world.status)
     })
     levels.forEach(level => {
         const levelNumber = levels.indexOf(level)

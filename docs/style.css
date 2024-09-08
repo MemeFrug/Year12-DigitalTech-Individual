@@ -357,3 +357,14 @@ canvas {
     width: 50vh;
     height: 50vh;
 }
+
+#pageTitle {
+    font-size: 6vh;
+    margin-bottom: 1vh;
+}
+
+#tutorialText {
+    margin-bottom: 2vh;
+    max-width: 80%;
+    font-size: 3vh;
+}
