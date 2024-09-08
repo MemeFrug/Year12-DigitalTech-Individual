@@ -409,9 +409,10 @@ window.addEventListener("load", () => {
     //Set up Mobile Touch Events
     InitialiseMobileEventsOn(Game.ctx.canvas)
 
+    // Listen for cashier Screen veiwing
+
     // Listen for play button, and set it up so it says the correct text
     let playButton = document.getElementById("playButton")
-    playButton.textContent = `Level Select`
     playButton.addEventListener("mouseup", () => {
         console.log("Pressed Play");
         //Close the User Interface
@@ -594,15 +595,14 @@ function Update(delta) {
             }
         });
     }
-    ctx.fillRect(mobileMouse.pos.x, mobileMouse.pos.y, 5,5)
 
     // If mouse is down
     if (Game.mouse.down) {
         // Make player go towards mouse
-        const mousexposrel = (mobileMouse.pos.x - Game.player.x)/70
-        const mouseyposrel = (mobileMouse.pos.y - Game.player.y)/70
-        Game.player.x += mousexposrel
-        Game.player.y += mouseyposrel
+        const mousexposrel = mobileMouse.pos.x - (Game.player.x+Game.player.w/2)
+        const mouseyposrel = mobileMouse.pos.y - (Game.player.y+Game.player.h/2)
+        Game.player.vx += mousexposrel/1200
+        Game.player.vy += mouseyposrel/1200
         console.log(mousexposrel, mouseyposrel);
     }
     requestAnimationFrame(Game.update)
