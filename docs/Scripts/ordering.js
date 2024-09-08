@@ -43,6 +43,11 @@ const orderingUI = {
         orderingUI.elements.orderList.innerHTML = ""
 
         //Reset the total cost
+        orderingUI.elements.orderTotal.textContent = "0"
+
+        // Reset the selected order list
+        orderingUI.selectedOrderList = []
+        orderingUI.elements.selectedOrderList.textContent = ""
 
         // Get a random list to have as the order
         const randomList = pickableItems.returnRandomList(count)

@@ -26,7 +26,7 @@ canvas {
     aspect-ratio: 16/9;
 }
 
-#submitButton {
+.submitButton {
     border-radius: 20px;
     border: 0.5vh solid black;
     font-size: 3vh;
@@ -41,13 +41,13 @@ canvas {
     transition: .1s;
 }
 
-#submitButton:hover {
+.submitButton:hover {
     background-color: black;
     color: white;
     border-radius: 25px;
 }
 
-#submitButton:active {
+.submitButton:active {
     background-color: aliceblue;
     color: black;
     border: 4px dotted black;
@@ -79,6 +79,7 @@ canvas {
     bottom: 0;
     border: 0.7vh solid black;
     border-radius: 15px;
+    background-color: white;
     height: 55%;
     width: calc(100% - 0.7vh);
     display: flex;
@@ -185,6 +186,11 @@ canvas {
     width: 60%;
     overflow: hidden;
     border-left: 5px dotted black;
+}
+
+#backButton {
+    height: 5vh;
+    width: 5vh;
 }
 
 .button:hover {
@@ -340,3 +346,14 @@ canvas {
     background-color: rgba(0, 0, 0, 0.205);
 }
 
+.character {
+    margin-top: 5vh;
+    margin-right: 17vh;
+    overflow: hidden;
+}
+
+.character img {
+    
+    width: 50vh;
+    height: 50vh;
+}

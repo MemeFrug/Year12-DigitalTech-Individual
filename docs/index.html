@@ -41,8 +41,8 @@
         </div>
         <div id="MainMenu" class="ui">
             <!-- <div id="settingButton">Settings</div> -->
-            <div id="playButton">Level Select</div> <!-- Says level select when loads -->
             <div id="cashierOpenButton">Cashier Screen</div> <!-- Says level select when loads -->
+            <div id="playButton">Level Select</div> <!-- Says level select when loads -->
         </div>
         <div id="cashierScreen" class="ui">
             <div class="bottomBar">
@@ -73,7 +73,7 @@
                     <div class="rightSide">
                         <!-- List of things you have selected -->
                         <div class="productSelection" style="overflow-y: auto;">
-                            <ul id="selectedOrderList" style="padding-inline-start: 2vh;"></ul>
+                            <ul id="selectedOrderList" style="padding-inline-start: 2.3vh;"></ul>
                         </div>
 
                         <!-- Change your menus -->
@@ -89,11 +89,14 @@
                     <div class="moneyTaker">
                         <div class="Screen">Total: <span id="orderTotal">0</span>$</div>
                     </div>
+                    <!-- For the tutorial, initially hidden -->
+                    <div class="submitButton" id="continueButtonTut" style="display: none;">Continue</div>
                     <!-- Submit Button -->
-                    <div id="submitButton"><div>Submit Order</div></div>
+                    <div class="submitButton" id="submitButton"><div>Submit Order</div></div>
                 </div>
             </div>
             <div class="topBar">
+                <!-- Right Side -->
                 <div class="orderResults">
                     <div id="results">
                         <b>Order</b>
@@ -105,6 +108,10 @@
                         </p>
                     </div>
                 </div>
+                <!-- Middle/Left Side -->
+                 <div class="character">
+                    <img src="./Content/Sprites/StickMan.jpg" alt="image of Stick Man">
+                 </div>
             </div>
         </div>
     </div>

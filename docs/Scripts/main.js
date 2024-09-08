@@ -190,6 +190,19 @@ const Game = {
                 }
             })
             
+            // Interaction Popup for Help with keybinds
+            Game.UserInterfaceLoop.push({
+                draw: (ctx) => {
+                    ctx.fillStyle = "black"
+                    ctx.font = "35px Verdana"
+                    ctx.fillText("W - Up" , Game.settings.width - 210, Game.settings.height- 200)
+                    ctx.fillText("A - Left" , Game.settings.width - 210, Game.settings.height- 160)
+                    ctx.fillText("S - Down" , Game.settings.width - 210, Game.settings.height- 120)
+                    ctx.fillText("D - Right" , Game.settings.width - 210, Game.settings.height- 80)
+                    ctx.fillText("Interact: E" , Game.settings.width - 210, Game.settings.height- 30)
+                }
+            })
+            
             // Reset the position just in case
             Game.player.x = 100
             Game.player.y = 100
@@ -410,6 +423,34 @@ window.addEventListener("load", () => {
     InitialiseMobileEventsOn(Game.ctx.canvas)
 
     // Listen for cashier Screen veiwing
+    document.getElementById("cashierOpenButton").addEventListener("mouseup", () => {
+        console.log("Clicked button");
+        //Close the User Interface
+        document.getElementById('MainMenu').style.display = "none"
+        //Show the user interface
+        Game.interface.userInterfaceElement.style.display = "flex"
+        // Hide the initiall Submit button, but show the continue button
+        document.getElementById("submitButton").style.display = "none"
+        document.getElementById("continueButtonTut").style.display = "flex"
+    })
+    // Add an mouse up event for when pressing the continue button in the order taking screen
+    document.getElementById("continueButtonTut").addEventListener("mouseup", () => {
+        // Re Show the initiall Submit button, but show the continue button
+        document.getElementById("submitButton").style.display = "flex"
+        document.getElementById("continueButtonTut").style.display = "none"
+        //Close the User Interface
+        document.getElementById('MainMenu').style.display = "flex"
+        //Show the user interface
+        Game.interface.userInterfaceElement.style.display = "none"
+    })
+
+    //Back button functionality for the level select screen
+    document.getElementById("backButton").addEventListener("mouseup", () => {
+        // Open the User Interface
+        document.getElementById('MainMenu').style.display = "flex"
+        // Close up the level Select
+        document.getElementById("LevelSelect").style.display = "none"
+    })
 
     // Listen for play button, and set it up so it says the correct text
     let playButton = document.getElementById("playButton")
