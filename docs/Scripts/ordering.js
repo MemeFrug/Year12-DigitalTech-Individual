@@ -135,7 +135,7 @@ const orderingUI = {
         orderingUIOpenTime = orderingUIOpenTime/1000 // Convert it into seconds
 
         //Add the total cost to the score, scales with how many you got right
-        const scoreToAdd = howManyCorrect - incorrectSelections*2
+        const scoreToAdd = howManyCorrect - incorrectSelections
         if (scoreToAdd <= 0) {
             Game.world.score += (scoreToAdd * 10) - 15
             console.log("added:", (scoreToAdd * 10) - 15);    

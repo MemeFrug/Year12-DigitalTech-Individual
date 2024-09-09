@@ -149,7 +149,10 @@ const Game = {
             })
 
             npc.draw = (ctx) => {
-                ctx.fillRect(npc.x, npc.y, npc.w, npc.h)
+                ctx.fillStyle = "black";
+                ctx.beginPath();
+                ctx.arc(npc.x + npc.w/2, npc.y + npc.h/2, npc.w/2, 0, 2 * Math.PI);
+                ctx.fill();
             }
 
             npc.isPlayer = true // Allows it to collide with things...
@@ -206,13 +209,20 @@ const Game = {
                     ctx.fillText("A - Left" , Game.settings.width - 210, Game.settings.height- 160)
                     ctx.fillText("S - Down" , Game.settings.width - 210, Game.settings.height- 120)
                     ctx.fillText("D - Right" , Game.settings.width - 210, Game.settings.height- 80)
-                    ctx.fillText("Interact: E (Double Tap Finger)" , Game.settings.width - 470, Game.settings.height- 30)
+                    ctx.fillText("Interact: E (Double Tap Finger)" , Game.settings.width - 600, Game.settings.height- 30)
                 }
             })
             
             // Reset the position just in case
             Game.player.x = 100
             Game.player.y = 100
+
+            Game.player.draw = (ctx) => {
+                ctx.fillStyle = "black";
+                ctx.beginPath();
+                ctx.arc(Game.player.x + Game.player.w/2, Game.player.y + Game.player.h/2, Game.player.w/2, 0, 2 * Math.PI);
+                ctx.fill();
+            }
 
             Game.world.objects.forEach(obj => {
                 Game.drawLoop.push(obj)
