@@ -1,0 +1,78 @@
+# Save Levelleing
+# Initial Desk Check Data
+level1 = score: 23
+level2 = score: 45
+level3 = score: 87
+                0       1       2
+allLevels = [level1, level2, level3]
+
+# Psuedo Code
+function saveAllScore:
+    # Save All Scores To temp Storage To Be Read
+    get allLevels
+    tempScores = empty Array
+    for each level in allLevel:
+        if level has property score:
+            set tempScore at levelNumber = score
+    
+    # Save this tempData into JavaScript's Local Storage
+    set localstorage "levelScores" to stringified tempScores # localstorage requires strings
+
+function loadAllScore:
+    # Get data from local storage to read and input
+    data = parsed localstorage "levelScores" # Parse to convert from string to JS
+    for every level in data:
+        set property score of allLevels at levelNumber = data at levelNumber
+
+# Desk Check
+(Saving Scores)
+saveAllScore()
+log: [23, 45, 87]
+localStorage = "[23, 45, 87]"
+
+(Program Refresh)
+allLevels = [{score: 0}, {score: 0}, {score: 0}]
+loadAllScore()
+localStorage = "[23, 45, 87]"
+allLevels = [{score: 23}, {score: 45}, {score: 87}]
+
+# Submit Order
+# Initial Values
+requiredListofItems = [{item: "Chocolate Milkshake"}, {item: "Chocolate Milkshake"}, {item: "Brownies"}]
+selectedItems = [{item: "Chocolate Milkshake"}, {item: "Chocolate Milkshake"}, {item: "Soft Serve"}]
+CurrentTime = 12000 # Program has been open for 12 seconds
+MenuOpenTime = 10000 # Ordering meny was open at 10 seconds
+
+# Psuedo Code
+get requiredListofItems
+get totalItemsSelected = length of orderList
+set howManyCorrect = 0
+
+for each selectedItems:
+    for each requiredItem in requiredListofItems:
+        if Item == requiredItem:
+            Add 1 to howManyCorrect
+            remove requiredItem in requiredListofItems
+
+log("How many correct selections: ", howManyCorrect)
+
+set incorrectSelections = totalItemsSelected - howManyCorrect
+set orderingUIOpenTime = (CurrentTime - MenuOpenTime)/1000 # convert from miliseconds to seconds
+
+set scoreToAdd = howManyCorrect - incorrectSelections
+if scoreToAdd <= 0:
+    Add scoreToAdd * 10 - 15 to the level's score # Ensure that it always minuses
+    log("added:", scoreToAdd*10 - 15)
+else:
+    Add ((scoreToAdd*3) * 1/orderingUIOpenTime) * 10 to the level's score # the longer the menu is open, the closer the score reaches 0
+    log("added:", ((scoreToAdd*3) * 1/orderingUIOpenTime) * 10)
+
+# Desk Check Data
+totalItemsSelected = 3
+log: (How many correct selections: 2)
+incorrectSelections = 3 - 2 = 1
+orderingUIOpenTime = (12000-10000)/1000 = 2 # seconds
+scoreToAdd = 2 - 1 = 1
+
+(Since scoreToAdd > 0)
+    added: ((1*3) * (1/2)) * 10 = 3/2 * 10 = 15

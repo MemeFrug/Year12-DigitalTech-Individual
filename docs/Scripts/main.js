@@ -516,15 +516,15 @@ function startLevel(selectedLevel) {
         //Open up level animation
         document.getElementById("animator").style.display = "flex"
         document.getElementById("animator").textContent = "Loading..."
-    },1900) // initialse in 1.8 second
+    },1900) // initialise in 1.8 second
 
     setTimeout(() => {
         // Initialise the level
         levels[Game.world.status].initialise()
-        //openning up animation
+        //opening up animation
         document.getElementById("animator").textContent = "Finished!"
         document.getElementById("animator").style.width = "0%"
-    },4000) // initialse in 3 second
+    },4000) // Initialise in 3 second
 }
 
 function setUpLevelSelect() {
@@ -670,7 +670,6 @@ function Update(delta) {
         const mouseyposrel = mobileMouse.pos.y - (Game.player.y+Game.player.h/2)
         Game.player.vx += mousexposrel/1200
         Game.player.vy += mouseyposrel/1200
-        console.log(mousexposrel, mouseyposrel);
     }
     requestAnimationFrame(Game.update)
 }

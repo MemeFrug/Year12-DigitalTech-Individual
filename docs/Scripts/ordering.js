@@ -140,11 +140,11 @@ const orderingUI = {
             Game.world.score += (scoreToAdd * 10) - 15
             console.log("added:", (scoreToAdd * 10) - 15);    
         } else if (scoreToAdd > 0) {
-            Game.world.score += ((scoreToAdd*3) * 1/orderingUIOpenTime) * 10
-            console.log("added:", ((scoreToAdd*3) * 1/orderingUIOpenTime) * 10);    
+            Game.world.score += ((scoreToAdd*3) * (1/orderingUIOpenTime)) * 10
+            console.log("added:", ((scoreToAdd*3) * (1/orderingUIOpenTime)) * 10);    
         }
         
-        orderingUI.elements.orderTotal.textContent = "0" // Reset it back to zero dollerydoos
+        orderingUI.elements.orderTotal.textContent = "0" // Reset total cost back to zero
 
         // Reset the selected items
         orderingUI.elements.selectedOrderList.innerHTML = ""
