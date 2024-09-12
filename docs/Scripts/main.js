@@ -465,6 +465,7 @@ window.addEventListener("load", () => {
         //Show the user interface
         Game.interface.userInterfaceElement.style.display = "none"
         Game.interface.changePageTitle("Order Taking Trainer")
+        Game.interface.changePageDescription("") // Remove the page description
     })
 
     //Back button functionality for the level select screen
